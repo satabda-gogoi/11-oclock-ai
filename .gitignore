@@ -1,0 +1,44 @@
+# Monorepo gitignore rules
+
+# Dependencies
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Production / Builds
+**/dist/
+**/build/
+**/out/
+
+# Environment / Secret keys
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+**/*.pem
+**/*.key
+
+# IDE / Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local scratch logs / Antigravity cache files
+.gemini/
+scratch/
+task.md
+implementation_plan.md
+walkthrough.md
+*.log
