@@ -203,6 +203,14 @@ export const getMasterApps = async (req, res, next) => {
 // @route   POST /api/dashboard/webhook/complete
 export const handleWebhookComplete = async (req, res, next) => {
   try {
+    // Verify secret token to authenticate the webhook source
+    const webhookSecret = req.headers['x-webhook-secret'];
+    const expectedSecret = process.env.N8N_WEBHOOK_SECRET;
+    if (!webhookSecret || !expectedSecret || webhookSecret !== expectedSecret) {
+      console.warn("🚨 Unauthorized attempt to hit n8n callback webhook!");
+      return res.status(401).json({ error: "Unauthorized webhook source." });
+    }
+
     // 💡 Catch the tracking parameters and output payload sent from n8n
     const { recordId, output, topic, status } = req.body;
 

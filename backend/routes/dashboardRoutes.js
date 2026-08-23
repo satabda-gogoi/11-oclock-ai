@@ -32,8 +32,8 @@ router.get('/chat/:chatId', getChatById);
 router.delete('/chat/:chatId', deleteChatById);
 router.get('/integrations', getIntegrations);
 router.delete('/integrations/:integrationId', deleteIntegration);
-router.post('/integrations/connect', connectIntegration); // Modal save hook endpoint
-router.get('/integrations/twitter/oauth-url', getTwitterOauthUrl);
+router.post('/integrations/connect', requireSubscription, connectIntegration); // Modal save hook endpoint
+router.get('/integrations/twitter/oauth-url', requireSubscription, getTwitterOauthUrl);
 router.get('/master-apps', getMasterApps);
 
 export default router;

@@ -12,6 +12,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 dotenv.config();
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
 // Connect to database
@@ -27,7 +28,14 @@ app.use(cors({
 }));
 
 // Payload parsing bounds
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ 
+  limit: '10kb',
+  verify: (req, res, buf) => {
+    if (req.originalUrl && req.originalUrl.startsWith('/api/subscription/webhook')) {
+      req.rawBody = buf;
+    }
+  }
+}));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Volumetric Throttling limits
