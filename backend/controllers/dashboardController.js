@@ -626,41 +626,61 @@ export const deleteScheduledPost = async (req, res, next) => {
   }
 };
 
+// Helper to extract date/time components in a specific timezone
+const getPartsInTimezone = (date, timeZone) => {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false
+  });
+  const parts = formatter.formatToParts(date);
+  const partValues = {};
+  for (const part of parts) {
+    partValues[part.type] = part.value;
+  }
+  return {
+    year: Number(partValues.year),
+    month: Number(partValues.month),
+    day: Number(partValues.day),
+    hour: Number(partValues.hour),
+    minute: Number(partValues.minute)
+  };
+};
+
 // Helper to determine if a daily post is due
 const isDailyPostDue = (post, now = new Date()) => {
   const { dailyTime, timeZone, lastRun } = post;
   try {
-    // 1. Get current date/time in user's timezone
-    const localString = now.toLocaleString("en-US", { timeZone });
-    const localNow = new Date(localString);
-    
-    // 2. Parse dailyTime ("HH:MM")
-    const [hours, minutes] = dailyTime.split(':').map(Number);
-    
-    // 3. Create target local execution time for today
-    const targetLocalTime = new Date(localNow);
-    targetLocalTime.setHours(hours, minutes, 0, 0);
-    
-    // If target execution time is in the future relative to current local time, it's not due yet
-    if (localNow < targetLocalTime) {
+    const currentLocal = getPartsInTimezone(now, timeZone);
+    const [targetHours, targetMinutes] = dailyTime.split(':').map(Number);
+
+    // Check if current local time is past the target publish time for today
+    const isPastTargetTime = 
+      currentLocal.hour > targetHours || 
+      (currentLocal.hour === targetHours && currentLocal.minute >= targetMinutes);
+
+    if (!isPastTargetTime) {
       return false;
     }
-    
-    // 4. Check if it already ran today
+
+    // Check if it already ran today in the user's timezone
     if (lastRun) {
-      const lastRunLocalString = lastRun.toLocaleString("en-US", { timeZone });
-      const lastRunLocal = new Date(lastRunLocalString);
-      
-      const isSameDay = (
-        localNow.getFullYear() === lastRunLocal.getFullYear() &&
-        localNow.getMonth() === lastRunLocal.getMonth() &&
-        localNow.getDate() === lastRunLocal.getDate()
-      );
+      const lastRunLocal = getPartsInTimezone(lastRun, timeZone);
+      const isSameDay = 
+        currentLocal.year === lastRunLocal.year &&
+        currentLocal.month === lastRunLocal.month &&
+        currentLocal.day === lastRunLocal.day;
+
       if (isSameDay) {
         return false;
       }
     }
-    
+
     return true;
   } catch (err) {
     console.error("Timezone comparison error:", err);

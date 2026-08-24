@@ -87,9 +87,13 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
 
     let schedulingConfig = null;
     if (isScheduled) {
+      let parsedTime = undefined;
+      if (scheduleType === "once" && scheduledTime) {
+        parsedTime = new Date(scheduledTime).toISOString();
+      }
       schedulingConfig = {
         scheduleType,
-        scheduledTime: scheduleType === "once" ? scheduledTime : undefined,
+        scheduledTime: parsedTime,
         dailyTime: scheduleType === "daily" ? dailyTime : undefined,
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
       };
