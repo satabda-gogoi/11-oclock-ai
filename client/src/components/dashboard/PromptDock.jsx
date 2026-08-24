@@ -1,11 +1,16 @@
 import { useState, useRef } from "react";
-import { Paperclip, X, Send, Image, FileText } from "lucide-react";
+import { Paperclip, X, Send, Image, FileText, Clock } from "lucide-react";
 import { supabase } from "../../utils/supabaseClient";
 
 export default function PromptDock({ promptInput, setPromptInput, isExecuting, onSubmit, activeApp, isSubscribed = true, onUpgradeClick }) {
   const fileInputRef = useRef(null);
   const [attachedFiles, setAttachedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [showSchedulePopover, setShowSchedulePopover] = useState(false);
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [scheduleType, setScheduleType] = useState("once"); // "once" or "daily"
+  const [scheduledTime, setScheduledTime] = useState("");
+  const [dailyTime, setDailyTime] = useState("");
 
   const handleFileChange = async (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -80,13 +85,128 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
       return;
     }
 
-    // 💡 INTERCEPT ENGINE: Inject our structural attachments payload block into the submission pipeline event handler
-    onSubmit(e, attachedFiles);
+    let schedulingConfig = null;
+    if (isScheduled) {
+      schedulingConfig = {
+        scheduleType,
+        scheduledTime: scheduleType === "once" ? scheduledTime : undefined,
+        dailyTime: scheduleType === "daily" ? dailyTime : undefined,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      };
+    }
+
+    // 💡 INTERCEPT ENGINE: Inject our structural attachments payload block and scheduling configuration
+    onSubmit(e, attachedFiles, schedulingConfig);
     setAttachedFiles([]); // Clear attachment stage state block
+    setIsScheduled(false);
+    setScheduledTime("");
+    setDailyTime("");
   };
 
   return (
     <div className="border-t border-border bg-card p-4 flex flex-col gap-3 relative">
+      
+      {/* ⏰ SCHEDULE CONFIGURATION POPOVER DIALOG */}
+      {showSchedulePopover && (
+        <div className="absolute bottom-16 left-4 z-30 bg-card border border-border rounded-xl p-4 shadow-xl w-72 flex flex-col gap-3">
+          <div className="flex justify-between items-center pb-2 border-b border-border">
+            <span className="text-xs font-semibold text-foreground">Schedule Settings</span>
+            <button 
+              type="button" 
+              onClick={() => setShowSchedulePopover(false)}
+              className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] text-muted-foreground uppercase font-mono tracking-wider">Recurrence</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setScheduleType("once")}
+                className={`py-1.5 px-3 text-xs font-medium rounded-lg border transition-colors cursor-pointer ${
+                  scheduleType === "once"
+                    ? "bg-primary border-primary text-primary-foreground font-semibold"
+                    : "bg-background border-border hover:bg-accent text-muted-foreground"
+                }`}
+              >
+                Once
+              </button>
+              <button
+                type="button"
+                onClick={() => setScheduleType("daily")}
+                className={`py-1.5 px-3 text-xs font-medium rounded-lg border transition-colors cursor-pointer ${
+                  scheduleType === "daily"
+                    ? "bg-primary border-primary text-primary-foreground font-semibold"
+                    : "bg-background border-border hover:bg-accent text-muted-foreground"
+                }`}
+              >
+                Daily
+              </button>
+            </div>
+          </div>
+
+          {scheduleType === "once" ? (
+            <div className="flex flex-col gap-2">
+              <label className="text-[11px] text-muted-foreground uppercase font-mono tracking-wider">Publish Date & Time</label>
+              <input
+                type="datetime-local"
+                value={scheduledTime}
+                onChange={(e) => setScheduledTime(e.target.value)}
+                min={new Date(Date.now() + 60000).toISOString().slice(0, 16)} // at least 1 min in future
+                className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-xs text-foreground outline-none focus:border-primary"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <label className="text-[11px] text-muted-foreground uppercase font-mono tracking-wider">Daily Publish Time</label>
+              <input
+                type="time"
+                value={dailyTime}
+                onChange={(e) => setDailyTime(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-xs text-foreground outline-none focus:border-primary"
+              />
+            </div>
+          )}
+
+          <div className="flex flex-row gap-2 mt-1">
+            <button
+              type="button"
+              onClick={() => {
+                if (scheduleType === "once" && !scheduledTime) {
+                  alert("Please specify a date and time to schedule.");
+                  return;
+                }
+                if (scheduleType === "daily" && !dailyTime) {
+                  alert("Please specify a daily time to schedule.");
+                  return;
+                }
+                setIsScheduled(true);
+                setShowSchedulePopover(false);
+              }}
+              className="flex-1 py-1.5 text-xs font-semibold rounded-lg bg-amber-500 text-black hover:bg-amber-400 transition-colors cursor-pointer"
+            >
+              Apply Schedule
+            </button>
+            {isScheduled && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsScheduled(false);
+                  setScheduledTime("");
+                  setDailyTime("");
+                  setShowSchedulePopover(false);
+                }}
+                className="py-1.5 px-3 text-xs font-semibold rounded-lg border border-destructive text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+      )}
       
       {/* 📎 FILE ATTACHMENTS PREVIEW DOCK ZONE */}
       {attachedFiles.length > 0 && (
@@ -136,6 +256,27 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
           className="flex items-center justify-center h-10 w-10 rounded-xl bg-background border border-border hover:bg-accent/40 text-muted-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Paperclip className="h-4 w-4" />
+        </button>
+
+        {/* ⏰ SCHEDULE CONFIGURATION TOGGLE BUTTON */}
+        <button
+          type="button"
+          onClick={() => {
+            if (!isSubscribed) {
+              onUpgradeClick?.();
+            } else {
+              setShowSchedulePopover(!showSchedulePopover);
+            }
+          }}
+          disabled={isExecuting || isUploading || !activeApp}
+          className={`flex items-center justify-center h-10 w-10 rounded-xl border transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer ${
+            isScheduled 
+              ? "bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500/20" 
+              : "bg-background border-border hover:bg-accent/40 text-muted-foreground"
+          }`}
+          title="Schedule Post"
+        >
+          <Clock className="h-4 w-4" />
         </button>
 
         <div className="flex-1 relative flex items-center bg-background border border-border rounded-xl focus-within:border-primary transition-colors px-3 py-1.5">

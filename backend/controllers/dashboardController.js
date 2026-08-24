@@ -3,6 +3,7 @@ import PromptHistory from '../models/PromptHistory.js';
 import Integration from '../models/Integration.js';
 import MasterApp from '../models/MasterApp.js';
 import TempOauthState from '../models/TempOauthState.js';
+import ScheduledPost from '../models/ScheduledPost.js';
 import { encrypt, decrypt } from '../utils/cryptoHelper.js';
 import crypto from 'crypto';
 
@@ -240,6 +241,23 @@ export const handleWebhookComplete = async (req, res, next) => {
 
     await historyRecord.save();
     console.log(`💾 Record ${recordId} successfully updated to status: ${historyRecord.status}`);
+
+    // Update corresponding ScheduledPost status / recycle daily
+    try {
+      const scheduledPost = await ScheduledPost.findOne({ historyRecordId: recordId });
+      if (scheduledPost) {
+        if (scheduledPost.scheduleType === 'once') {
+          scheduledPost.status = status === 'failed' ? 'failed' : 'completed';
+        } else if (scheduledPost.scheduleType === 'daily') {
+          scheduledPost.lastRun = new Date();
+          scheduledPost.status = 'scheduled'; // reset back to scheduled for tomorrow
+        }
+        await scheduledPost.save();
+        console.log(`⏰ Scheduled post ${scheduledPost._id} status updated/recycled.`);
+      }
+    } catch (schedErr) {
+      console.error("⚠️ Failed to update scheduled post status in webhook callback:", schedErr);
+    }
 
     return res.status(200).json({ success: true, message: "Workspace log updated successfully." });
   } catch (error) {
@@ -512,5 +530,253 @@ export const getTwitterOauthCallback = async (req, res, next) => {
     console.error("🚨 Error in Twitter OAuth callback:", error);
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
     return res.redirect(`${frontendUrl}/dashboard?oauthStatus=error&error=internal_server_error`);
+  }
+};
+
+// @desc    Create a scheduled post
+// @route   POST /api/dashboard/scheduled
+export const createScheduledPost = async (req, res, next) => {
+  try {
+    const { userId } = req.auth;
+    const { prompt, platform, scheduleType, scheduledTime, dailyTime, timeZone, attachments } = req.body;
+
+    if (!prompt || !platform) {
+      return res.status(400).json({ error: "Missing required fields (prompt, platform)." });
+    }
+
+    if (scheduleType === 'once' && !scheduledTime) {
+      return res.status(400).json({ error: "scheduledTime is required for one-time scheduled posts." });
+    }
+
+    if (scheduleType === 'daily' && !dailyTime) {
+      return res.status(400).json({ error: "dailyTime (HH:MM) is required for daily scheduled posts." });
+    }
+
+    const scheduledPost = new ScheduledPost({
+      userId,
+      prompt,
+      platform: platform.toLowerCase(),
+      scheduleType: scheduleType || 'once',
+      scheduledTime: scheduleType === 'once' ? new Date(scheduledTime) : undefined,
+      dailyTime: scheduleType === 'daily' ? dailyTime : undefined,
+      timeZone: timeZone || 'UTC',
+      attachments: attachments || [],
+      status: 'scheduled'
+    });
+
+    await scheduledPost.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Post scheduled successfully.",
+      scheduledPost
+    });
+  } catch (error) {
+    console.error("Error creating scheduled post:", error);
+    next(error);
+  }
+};
+
+// @desc    Get user's scheduled posts
+// @route   GET /api/dashboard/scheduled
+export const getScheduledPosts = async (req, res, next) => {
+  try {
+    const { userId } = req.auth;
+    const scheduledPosts = await ScheduledPost.find({ 
+      userId,
+      status: { $in: ['scheduled', 'processing'] }
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: scheduledPosts.length,
+      scheduledPosts
+    });
+  } catch (error) {
+    console.error("Error fetching scheduled posts:", error);
+    next(error);
+  }
+};
+
+// @desc    Delete/Cancel a scheduled post
+// @route   DELETE /api/dashboard/scheduled/:id
+export const deleteScheduledPost = async (req, res, next) => {
+  try {
+    const { userId } = req.auth;
+    const { id } = req.params;
+
+    const scheduledPost = await ScheduledPost.findById(id);
+    if (!scheduledPost) {
+      return res.status(404).json({ error: "Scheduled post not found." });
+    }
+
+    if (scheduledPost.userId !== userId) {
+      return res.status(403).json({ error: "Unauthorized operation." });
+    }
+
+    await ScheduledPost.deleteOne({ _id: id });
+
+    res.status(200).json({
+      success: true,
+      message: "Scheduled post cancelled successfully."
+    });
+  } catch (error) {
+    console.error("Error deleting scheduled post:", error);
+    next(error);
+  }
+};
+
+// Helper to determine if a daily post is due
+const isDailyPostDue = (post, now = new Date()) => {
+  const { dailyTime, timeZone, lastRun } = post;
+  try {
+    // 1. Get current date/time in user's timezone
+    const localString = now.toLocaleString("en-US", { timeZone });
+    const localNow = new Date(localString);
+    
+    // 2. Parse dailyTime ("HH:MM")
+    const [hours, minutes] = dailyTime.split(':').map(Number);
+    
+    // 3. Create target local execution time for today
+    const targetLocalTime = new Date(localNow);
+    targetLocalTime.setHours(hours, minutes, 0, 0);
+    
+    // If target execution time is in the future relative to current local time, it's not due yet
+    if (localNow < targetLocalTime) {
+      return false;
+    }
+    
+    // 4. Check if it already ran today
+    if (lastRun) {
+      const lastRunLocalString = lastRun.toLocaleString("en-US", { timeZone });
+      const lastRunLocal = new Date(lastRunLocalString);
+      
+      const isSameDay = (
+        localNow.getFullYear() === lastRunLocal.getFullYear() &&
+        localNow.getMonth() === lastRunLocal.getMonth() &&
+        localNow.getDate() === lastRunLocal.getDate()
+      );
+      if (isSameDay) {
+        return false;
+      }
+    }
+    
+    return true;
+  } catch (err) {
+    console.error("Timezone comparison error:", err);
+    return false;
+  }
+};
+
+// @desc    Poll pending scheduled posts due to run
+// @route   GET /api/dashboard/scheduled/pending
+export const getPendingScheduledPosts = async (req, res, next) => {
+  try {
+    // Verify secret token to authenticate the source (n8n scheduler)
+    const webhookSecret = req.headers['x-webhook-secret'];
+    const expectedSecret = process.env.N8N_WEBHOOK_SECRET;
+    if (!webhookSecret || !expectedSecret || webhookSecret !== expectedSecret) {
+      console.warn("🚨 Unauthorized attempt to poll scheduled posts!");
+      return res.status(401).json({ error: "Unauthorized source." });
+    }
+
+    const now = new Date();
+
+    // 1. Fetch all once-type posts that are scheduled and in the past/due
+    const oncePosts = await ScheduledPost.find({
+      scheduleType: 'once',
+      status: 'scheduled',
+      scheduledTime: { $lte: now }
+    });
+
+    // 2. Fetch all daily-type posts that are scheduled
+    const dailyPosts = await ScheduledPost.find({
+      scheduleType: 'daily',
+      status: 'scheduled'
+    });
+
+    // Filter daily posts that are due to run now
+    const dueDailyPosts = dailyPosts.filter(post => isDailyPostDue(post, now));
+
+    const allDuePosts = [...oncePosts, ...dueDailyPosts];
+    const results = [];
+
+    for (const post of allDuePosts) {
+      // Find the user's integration credentials for this platform
+      const masterApp = await MasterApp.findOne({ iconKey: post.platform, isActive: true });
+      if (!masterApp) {
+        console.warn(`MasterApp not found or inactive for platform ${post.platform}`);
+        continue;
+      }
+
+      const userIntegration = await Integration.findOne({
+        userId: post.userId,
+        appId: masterApp._id,
+        authStatus: 'authorized'
+      });
+
+      if (!userIntegration) {
+        console.warn(`User ${post.userId} has no integration for platform ${post.platform}`);
+        post.status = 'failed';
+        await post.save();
+        continue;
+      }
+
+      // Decrypt credentials
+      let decryptedCredentials;
+      try {
+        decryptedCredentials = decrypt(
+          userIntegration.encryptedData,
+          userIntegration.iv,
+          userIntegration.authTag,
+          true
+        );
+        if (post.platform === 'twitter') {
+          // Twitter token refresh if needed
+          decryptedCredentials = await refreshTwitterTokenIfNeeded(userIntegration, decryptedCredentials);
+        }
+      } catch (err) {
+        console.error(`Failed to decrypt credentials for user ${post.userId} / post ${post._id}`);
+        post.status = 'failed';
+        await post.save();
+        continue;
+      }
+
+      // Create a PromptHistory record to track this execution
+      const historyRecord = new PromptHistory({
+        userId: post.userId,
+        title: post.prompt,
+        inputPrompt: post.prompt,
+        generatedContent: "",
+        status: 'processing',
+        platform: post.platform,
+        attachments: post.attachments || []
+      });
+      await historyRecord.save();
+
+      // Update ScheduledPost status to processing
+      post.status = 'processing';
+      post.historyRecordId = historyRecord._id;
+      await post.save();
+
+      results.push({
+        scheduleId: post._id,
+        recordId: historyRecord._id,
+        prompt: post.prompt,
+        platform: post.platform,
+        userId: post.userId,
+        attachments: post.attachments || [],
+        credentials: decryptedCredentials
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count: results.length,
+      posts: results
+    });
+  } catch (error) {
+    console.error("Error polling scheduled posts:", error);
+    next(error);
   }
 };

@@ -20,6 +20,7 @@ export default function DashboardPage() {
   // Layout Controls & Core Matrix States
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [promptHistory, setPromptHistory] = useState([]);
+  const [scheduledPosts, setScheduledPosts] = useState([]);
   const [masterApps, setMasterApps] = useState([]);
   const [integrations, setIntegrations] = useState([]);
   const [activeApp, setActiveApp] = useState(null);
@@ -79,6 +80,7 @@ export default function DashboardPage() {
       fetchWorkspaceHistory();
       fetchMasterApps();
       fetchConnectedIntegrations();
+      fetchScheduledPosts();
     }
     
     // Cleanup active polling intervals if the user navigates away from the dashboard
@@ -310,6 +312,46 @@ export default function DashboardPage() {
     }
   };
 
+  const fetchScheduledPosts = async () => {
+    try {
+      const token = await getToken();
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/dashboard/scheduled`, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setScheduledPosts(data.scheduledPosts || []);
+      }
+    } catch (error) {
+      console.error("Failed syncing scheduled posts:", error);
+    }
+  };
+
+  const handleCancelSchedule = async (scheduleId) => {
+    try {
+      setStatusMessage({ type: "info", text: "Cancelling scheduled post..." });
+      const token = await getToken();
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/dashboard/scheduled/${scheduleId}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (response.ok) {
+        setStatusMessage({ type: "info", text: "Scheduled post cancelled successfully." });
+        setTimeout(() => setStatusMessage({ type: null, text: "" }), 3000);
+        fetchScheduledPosts();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server status ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Cancel schedule error:", error);
+      setStatusMessage({ type: "error", text: `Failed to cancel schedule: ${error.message}` });
+    }
+  };
+
   const handleSelectHistoricalToken = (item) => {
     // Clear any polling interval when switching chats
     if (pollingIntervalRef.current) {
@@ -437,14 +479,55 @@ export default function DashboardPage() {
     }
   };
 
-  const executePipelineDispatch = async (e, attachments = []) => { 
+  const executePipelineDispatch = async (e, attachments = [], schedulingConfig = null) => { 
     e.preventDefault();
     if ((!promptInput.trim() && attachments.length === 0) || !activeApp || isExecuting) return;
 
     const userPromptPayload = promptInput;
     setPromptInput(""); 
+
+    if (schedulingConfig) {
+      setStatusMessage({ type: "info", text: "Scheduling your post..." });
+      try {
+        const token = await getToken();
+        const API_URL = import.meta.env.VITE_API_URL;
+        
+        const response = await fetch(`${API_URL}/api/dashboard/scheduled`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            prompt: userPromptPayload,
+            platform: activeApp.iconKey,
+            scheduleType: schedulingConfig.scheduleType,
+            scheduledTime: schedulingConfig.scheduledTime,
+            dailyTime: schedulingConfig.dailyTime,
+            timeZone: schedulingConfig.timeZone,
+            attachments: attachments
+          })
+        });
+
+        if (response.status === 403) {
+          setStatusMessage({ type: null, text: "" });
+          setIsUpgradeModalOpen(true);
+          return;
+        }
+
+        if (!response.ok) throw new Error(`Server Fault: ${response.status}`);
+        
+        setStatusMessage({ type: "info", text: "Post scheduled successfully!" });
+        setTimeout(() => setStatusMessage({ type: null, text: "" }), 4000);
+        fetchScheduledPosts();
+      } catch (error) {
+        console.error("Scheduling execution failure error:", error);
+        setStatusMessage({ type: "error", text: "Something went wrong scheduling your post. Please try again." });
+      }
+      return;
+    }
+
     setIsExecuting(true);
-    
     setStatusMessage({ type: "info", text: "Compiling assets, compiling scripts, and updating channels..." });
     setActiveChat({ prompt: userPromptPayload || "Attached file payload analysis dispatch.", response: null });
 
@@ -586,6 +669,8 @@ export default function DashboardPage() {
           activeApp={activeApp} 
           onDisconnectChannel={handleDisconnectIntegration}
           onDeleteHistory={handleDeleteHistory}
+          scheduledPosts={scheduledPosts}
+          onCancelSchedule={handleCancelSchedule}
         />
 
         <div className="flex-1 flex flex-col relative h-[calc(100vh-4rem)] bg-background/20">
