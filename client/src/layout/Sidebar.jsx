@@ -1,4 +1,5 @@
-import { PanelLeftClose, PanelLeft, Plus, History, Clock, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { PanelLeftClose, PanelLeft, Plus, History, Clock, Trash2, ChevronDown, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import HistoryPanel from "../components/sidebar/HistoryPanel";
 import AppsDrawer from "../components/sidebar/AppsDrawer";
@@ -18,6 +19,7 @@ export default function Sidebar({
   onCancelSchedule
 }) {
   const navigate = useNavigate();
+  const [scheduledCollapsed, setScheduledCollapsed] = useState(false);
 
   return (
     <aside 
@@ -65,55 +67,72 @@ export default function Sidebar({
           /> 
           
           {/* ⏰ SCHEDULED POSTS SECTION */}
-          <div className="flex-1 p-3 overflow-y-auto space-y-2 max-w-full scrollbar-none border-b border-white/5 flex flex-col min-h-0">
-            <div className="flex items-center gap-3 px-2 py-1 text-muted-foreground mb-2">
-              <Clock className="w-4 h-4 flex-shrink-0 text-amber-500" />
-              <span className="text-xs font-bold uppercase tracking-wider">Scheduled Posts</span>
-            </div>
+          <div className={`p-3 border-b border-white/5 flex flex-col min-h-0 transition-all ${
+            scheduledCollapsed ? "h-auto flex-shrink-0" : "flex-1 overflow-hidden"
+          }`}>
+            <button
+              type="button"
+              onClick={() => setScheduledCollapsed(!scheduledCollapsed)}
+              className="w-full flex items-center justify-between px-2 py-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer mb-1 focus:outline-none"
+            >
+              <div className="flex items-center gap-3">
+                <Clock className="w-4 h-4 flex-shrink-0 text-amber-500" />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Scheduled ({scheduledPosts.length})
+                </span>
+              </div>
+              {scheduledCollapsed ? (
+                <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
+              ) : (
+                <ChevronDown className="w-3.5 h-3.5 flex-shrink-0" />
+              )}
+            </button>
             
-            {scheduledPosts.length === 0 ? (
-              <p className="text-xs text-muted-foreground text-center py-4">No scheduled posts.</p>
-            ) : (
-              <div className="space-y-2 overflow-y-auto flex-1 pr-1">
-                {scheduledPosts.map((item) => (
-                  <div
-                    key={item._id}
-                    className="w-full p-2.5 rounded-xl border border-white/5 bg-background/40 hover:bg-background transition-all group flex items-start gap-3 justify-between overflow-hidden"
-                  >
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <span className="font-bold text-xs truncate text-foreground/90">{item.prompt}</span>
-                      <div className="flex flex-wrap items-center gap-1.5 mt-1 font-mono text-[9px] text-muted-foreground/80">
-                        <span className="capitalize px-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded">
-                          {item.platform}
-                        </span>
-                        <span>•</span>
-                        {item.scheduleType === 'once' ? (
-                          <span>
-                            {item.scheduledTime ? new Date(item.scheduledTime).toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : ''}
-                          </span>
-                        ) : (
-                          <span>
-                            Daily at {item.dailyTime}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      title="Cancel Schedule"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (window.confirm("Are you sure you want to cancel this scheduled post?")) {
-                          onCancelSchedule?.(item._id);
-                        }
-                      }}
-                      className="p-1 rounded hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer flex-shrink-0 self-center"
+            {!scheduledCollapsed && (
+              <div className="space-y-2 overflow-y-auto flex-1 pr-1 mt-1">
+                {scheduledPosts.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-4">No scheduled posts.</p>
+                ) : (
+                  scheduledPosts.map((item) => (
+                    <div
+                      key={item._id}
+                      className="w-full p-2.5 rounded-xl border border-white/5 bg-background/40 hover:bg-background transition-all group flex items-start gap-3 justify-between overflow-hidden"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))}
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className="font-bold text-xs truncate text-foreground/90">{item.prompt}</span>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1 font-mono text-[9px] text-muted-foreground/80">
+                          <span className="capitalize px-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded">
+                            {item.platform}
+                          </span>
+                          <span>•</span>
+                          {item.scheduleType === 'once' ? (
+                            <span>
+                              {item.scheduledTime ? new Date(item.scheduledTime).toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : ''}
+                            </span>
+                          ) : (
+                            <span>
+                              Daily at {item.dailyTime}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        title="Cancel Schedule"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (window.confirm("Are you sure you want to cancel this scheduled post?")) {
+                            onCancelSchedule?.(item._id);
+                          }
+                        }}
+                        className="p-1 rounded hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer flex-shrink-0 self-center"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             )}
           </div>
