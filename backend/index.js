@@ -8,6 +8,7 @@ import connectDB from './config/db.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { checkAndExecuteSchedules } from './controllers/dashboardController.js';
 
 dotenv.config();
 
@@ -66,4 +67,9 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`🚀 Secure Core Engine running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  
+  // Initialize scheduled tasks checking loop (polls DB every 60s & triggers n8n webhooks)
+  setInterval(() => {
+    checkAndExecuteSchedules();
+  }, 60000);
 });

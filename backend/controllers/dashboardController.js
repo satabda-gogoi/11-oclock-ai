@@ -800,3 +800,126 @@ export const getPendingScheduledPosts = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Backend cron/interval checking daemon execution loop
+//          This polls pending database schedules and pushes them to your existing n8n webhooks
+export const checkAndExecuteSchedules = async () => {
+  try {
+    const now = new Date();
+
+    // 1. Fetch once-type posts due
+    const oncePosts = await ScheduledPost.find({
+      scheduleType: 'once',
+      status: 'scheduled',
+      scheduledTime: { $lte: now }
+    });
+
+    // 2. Fetch daily-type posts
+    const dailyPosts = await ScheduledPost.find({
+      scheduleType: 'daily',
+      status: 'scheduled'
+    });
+
+    const dueDailyPosts = dailyPosts.filter(post => isDailyPostDue(post, now));
+    const allDuePosts = [...oncePosts, ...dueDailyPosts];
+
+    if (allDuePosts.length === 0) return;
+
+    console.log(`⏰ Found ${allDuePosts.length} scheduled posts due for execution.`);
+
+    for (const post of allDuePosts) {
+      // Find the user's integration credentials
+      const masterApp = await MasterApp.findOne({ iconKey: post.platform, isActive: true });
+      if (!masterApp) {
+        console.warn(`MasterApp not found for platform ${post.platform}`);
+        continue;
+      }
+
+      const userIntegration = await Integration.findOne({
+        userId: post.userId,
+        appId: masterApp._id,
+        authStatus: 'authorized'
+      });
+
+      if (!userIntegration) {
+        console.warn(`User integration missing for platform ${post.platform}`);
+        post.status = 'failed';
+        await post.save();
+        continue;
+      }
+
+      // Decrypt credentials
+      let decryptedCredentials;
+      try {
+        decryptedCredentials = decrypt(
+          userIntegration.encryptedData,
+          userIntegration.iv,
+          userIntegration.authTag,
+          true
+        );
+        if (post.platform === 'twitter') {
+          decryptedCredentials = await refreshTwitterTokenIfNeeded(userIntegration, decryptedCredentials);
+        }
+      } catch (err) {
+        console.error(`Decryption failed for scheduled post ${post._id}`);
+        post.status = 'failed';
+        await post.save();
+        continue;
+      }
+
+      // Create PromptHistory record
+      const historyRecord = new PromptHistory({
+        userId: post.userId,
+        title: post.prompt,
+        inputPrompt: post.prompt,
+        generatedContent: "",
+        status: 'processing',
+        platform: post.platform,
+        attachments: post.attachments || []
+      });
+      await historyRecord.save();
+
+      // Update ScheduledPost state
+      post.status = 'processing';
+      post.historyRecordId = historyRecord._id;
+      await post.save();
+
+      // Resolve n8n webhook URL
+      const workflowWebhookMap = {
+        linkedin: process.env.N8N_LINKEDIN_WEBHOOK_URL,
+        twitter: process.env.N8N_TWITTER_WEBHOOK_URL,
+        instagram: process.env.N8N_INSTAGRAM_WEBHOOK_URL
+      };
+
+      const targetWebhookUrl = workflowWebhookMap[post.platform];
+      if (!targetWebhookUrl) {
+        console.error(`No webhook URL configured for platform ${post.platform}`);
+        historyRecord.status = 'failed';
+        await historyRecord.save();
+        post.status = 'failed';
+        await post.save();
+        continue;
+      }
+
+      console.log(`🚀 Dispatching scheduled post ${post._id} to n8n webhook: ${targetWebhookUrl}`);
+
+      // Fire async request to user's existing n8n webhook workflow
+      fetch(targetWebhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          prompt: post.prompt, 
+          userId: post.userId, 
+          strategy: post.scheduleType,
+          recordId: historyRecord._id, 
+          attachments: post.attachments || [], 
+          credentials: decryptedCredentials 
+        })
+      }).catch(err => {
+        console.error(`🚨 Error pushing scheduled post to n8n:`, err.message);
+      });
+    }
+  } catch (error) {
+    console.error("🚨 Error in checkAndExecuteSchedules daemon loop:", error);
+  }
+};
