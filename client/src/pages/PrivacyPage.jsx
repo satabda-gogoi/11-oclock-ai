@@ -125,6 +125,10 @@ export default function PrivacyPage() {
             <span className="font-bold text-foreground">11 o'clock</span>
             <span>© 2026. Secure publishing privacy guidelines.</span>
           </div>
+          <div className="flex gap-6">
+            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+            <Link to="/guide" className="hover:text-foreground transition-colors">Guide</Link>
+          </div>
         </div>
       </footer>
 

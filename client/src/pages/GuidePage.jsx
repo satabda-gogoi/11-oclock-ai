@@ -263,6 +263,10 @@ export default function GuidePage() {
             <span className="font-bold text-foreground">11 o'clock</span>
             <span>© 2026. Secure publishing guide index.</span>
           </div>
+          <div className="flex gap-6">
+            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+          </div>
         </div>
       </footer>
 
