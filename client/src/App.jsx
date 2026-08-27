@@ -5,6 +5,9 @@ import DashboardPage from "./pages/DashboardPage";
 import PricingPage from "./pages/PricingPage";
 import GuidePage from "./pages/GuidePage";
 import PrivacyPage from "./pages/PrivacyPage";
+import TermsPage from "./pages/TermsPage";
+import RefundPage from "./pages/RefundPage";
+import ContactPage from "./pages/ContactPage";
 
 export default function App() {
   return (
@@ -24,6 +27,21 @@ export default function App() {
       <Route 
         path="/privacy" 
         element={<PrivacyPage />} 
+      />
+
+      <Route 
+        path="/terms" 
+        element={<TermsPage />} 
+      />
+
+      <Route 
+        path="/refund" 
+        element={<RefundPage />} 
+      />
+
+      <Route 
+        path="/contact" 
+        element={<ContactPage />} 
       />
 
       {/* PROTECTED ROUTE */}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { SignInButton, SignUpButton, useAuth } from "@clerk/clerk-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import Footer from "../layout/Footer";
 import { Sparkles, Zap, Shield, Calendar, Layers, Globe, MessageSquare, ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
 
 export default function LandingPage() {
@@ -597,18 +598,7 @@ export default function LandingPage() {
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-custom py-8 w-full bg-card/20 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-foreground">11 o'clock</span>
-            <span>© 2026. Billed under Razorpay security guidelines.</span>
-          </div>
-          <div className="flex gap-6">
-            <Link to="/guide" className="hover:text-foreground transition-colors">Guide</Link>
-            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

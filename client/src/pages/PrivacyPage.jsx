@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import Footer from "../layout/Footer";
 import { ArrowLeft, Shield, Lock, Eye, Database } from "lucide-react";
 
 export default function PrivacyPage() {
@@ -119,18 +120,7 @@ export default function PrivacyPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-custom py-8 w-full bg-card/20 mt-20">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-foreground">11 o'clock</span>
-            <span>© 2026. Secure publishing privacy guidelines.</span>
-          </div>
-          <div className="flex gap-6">
-            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
-            <Link to="/guide" className="hover:text-foreground transition-colors">Guide</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
     </div>
   );
