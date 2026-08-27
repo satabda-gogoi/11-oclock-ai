@@ -433,18 +433,18 @@ export const getTwitterOauthCallback = async (req, res, next) => {
 
     if (error) {
       console.warn("⚠️ Twitter OAuth access denied by user:", error);
-      return res.redirect(`${frontendUrl}/dashboard?oauthStatus=error&error=${error}`);
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=${error}`);
     }
 
     if (!code || !state) {
-      return res.redirect(`${frontendUrl}/dashboard?oauthStatus=error&error=missing_params`);
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=missing_params`);
     }
 
     // Lookup corresponding PKCE session verifier
     const tempState = await TempOauthState.findOne({ state });
     if (!tempState) {
       console.error("🚨 Twitter state match not found or expired.");
-      return res.redirect(`${frontendUrl}/dashboard?oauthStatus=error&error=session_expired`);
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=session_expired`);
     }
 
     const client_id = process.env.TWITTER_CLIENT_ID;
@@ -471,7 +471,7 @@ export const getTwitterOauthCallback = async (req, res, next) => {
     if (!response.ok) {
       const errText = await response.text();
       console.error("🚨 Twitter token exchange error:", errText);
-      return res.redirect(`${frontendUrl}/dashboard?oauthStatus=error&error=token_exchange_failed`);
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=token_exchange_failed`);
     }
 
     const tokenData = await response.json();
@@ -495,7 +495,7 @@ export const getTwitterOauthCallback = async (req, res, next) => {
     const masterApp = await MasterApp.findOne({ iconKey: 'twitter' });
     if (!masterApp) {
       console.error("🚨 Twitter master app configuration not found in DB.");
-      return res.redirect(`${frontendUrl}/dashboard?oauthStatus=error&error=app_not_found`);
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=app_not_found`);
     }
 
     // Encrypt the connection data payload
@@ -525,11 +525,11 @@ export const getTwitterOauthCallback = async (req, res, next) => {
     await TempOauthState.deleteOne({ _id: tempState._id });
 
     console.log(`✅ Integration successfully saved for Twitter account @${username}`);
-    return res.redirect(`${frontendUrl}/dashboard?oauthStatus=success&platform=twitter`);
+    return res.redirect(`${frontendUrl}/workspace?oauthStatus=success&platform=twitter`);
   } catch (error) {
     console.error("🚨 Error in Twitter OAuth callback:", error);
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-    return res.redirect(`${frontendUrl}/dashboard?oauthStatus=error&error=internal_server_error`);
+    return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=internal_server_error`);
   }
 };
 
