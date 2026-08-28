@@ -923,3 +923,158 @@ export const checkAndExecuteSchedules = async () => {
     console.error("🚨 Error in checkAndExecuteSchedules daemon loop:", error);
   }
 };
+
+// @desc    Get LinkedIn OAuth 2.0 authorization URL
+// @route   GET /api/dashboard/integrations/linkedin/oauth-url
+export const getLinkedinOauthUrl = async (req, res, next) => {
+  try {
+    const { userId } = req.auth;
+    const client_id = process.env.LINKEDIN_CLIENT_ID;
+    const redirect_uri = process.env.LINKEDIN_REDIRECT_URI;
+
+    if (!client_id || !redirect_uri) {
+      return res.status(500).json({ error: "LinkedIn OAuth settings are not configured on the server." });
+    }
+
+    const state = crypto.randomBytes(16).toString('hex');
+    const codeVerifier = crypto.randomBytes(32).toString('base64url');
+
+    // Persist temporary authentication state in DB
+    await TempOauthState.create({
+      state,
+      codeVerifier,
+      userId
+    });
+
+    const scope = 'w_member_social openid profile email';
+    const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${encodeURIComponent(client_id)}&redirect_uri=${encodeURIComponent(redirect_uri)}&scope=${encodeURIComponent(scope)}&state=${encodeURIComponent(state)}`;
+
+    res.status(200).json({ success: true, url: authUrl });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    LinkedIn OAuth 2.0 Callback handler URL
+// @route   GET /api/dashboard/integrations/linkedin/callback
+export const getLinkedinOauthCallback = async (req, res, next) => {
+  try {
+    const { code, state, error } = req.query;
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+
+    if (error) {
+      console.warn("⚠️ LinkedIn OAuth access denied by user:", error);
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=${error}`);
+    }
+
+    if (!code || !state) {
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=missing_params`);
+    }
+
+    // Lookup corresponding PKCE session verifier
+    const tempState = await TempOauthState.findOne({ state });
+    if (!tempState) {
+      console.error("🚨 LinkedIn state match not found or expired.");
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=session_expired`);
+    }
+
+    const client_id = process.env.LINKEDIN_CLIENT_ID;
+    const client_secret = process.env.LINKEDIN_CLIENT_SECRET;
+    const redirect_uri = process.env.LINKEDIN_REDIRECT_URI;
+
+    if (!client_id || !client_secret || !redirect_uri) {
+      console.error("🚨 LinkedIn OAuth keys are missing in environment.");
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=server_configuration_missing`);
+    }
+
+    // Exchange temporary code for access token
+    const response = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri,
+        client_id,
+        client_secret
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("🚨 LinkedIn token exchange error:", errText);
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=token_exchange_failed`);
+    }
+
+    const tokenData = await response.json();
+
+    // Query active LinkedIn profile parameters using OpenID Connect UserInfo
+    const userRes = await fetch('https://api.linkedin.com/v2/userinfo', {
+      headers: {
+        'Authorization': `Bearer ${tokenData.access_token}`
+      }
+    });
+
+    let profileName = "LinkedInUser";
+    let profileId = "";
+
+    if (userRes.ok) {
+      const userData = await userRes.json();
+      if (userData?.name) {
+        profileName = userData.name;
+      }
+      if (userData?.sub) {
+        profileId = userData.sub; // This is the unique profile ID
+      }
+    } else {
+      const errText = await userRes.text();
+      console.warn("⚠️ Failed to fetch LinkedIn user info:", errText);
+    }
+
+    if (!profileId) {
+      console.error("🚨 Could not retrieve LinkedIn profile ID.");
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=profile_retrieval_failed`);
+    }
+
+    // Resolve MasterApp for LinkedIn
+    const masterApp = await MasterApp.findOne({ iconKey: 'linkedin' });
+    if (!masterApp) {
+      console.error("🚨 LinkedIn master app configuration not found in DB.");
+      return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=app_not_found`);
+    }
+
+    // Encrypt the connection data payload
+    const credentialsPayload = {
+      accessToken: tokenData.access_token,
+      profileName: profileName,
+      profileId: profileId
+    };
+
+    const cryptoPackage = encrypt(credentialsPayload);
+
+    // Save integration
+    await Integration.findOneAndUpdate(
+      { userId: tempState.userId, appId: masterApp._id },
+      {
+        authStatus: 'authorized',
+        profileName: profileName,
+        encryptedData: cryptoPackage.encryptedData,
+        iv: cryptoPackage.iv,
+        authTag: cryptoPackage.authTag
+      },
+      { upsert: true }
+    );
+
+    // Clean up temporary state record
+    await TempOauthState.deleteOne({ _id: tempState._id });
+
+    console.log(`✅ Integration successfully saved for LinkedIn account ${profileName} (${profileId})`);
+    return res.redirect(`${frontendUrl}/workspace?oauthStatus=success&platform=linkedin`);
+  } catch (error) {
+    console.error("🚨 Error in LinkedIn OAuth callback:", error);
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    return res.redirect(`${frontendUrl}/workspace?oauthStatus=error&error=internal_server_error`);
+  }
+};

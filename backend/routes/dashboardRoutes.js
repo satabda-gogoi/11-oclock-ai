@@ -11,6 +11,8 @@ import {
   getChatById,
   getTwitterOauthUrl,
   getTwitterOauthCallback,
+  getLinkedinOauthUrl,
+  getLinkedinOauthCallback,
   deleteIntegration,
   deleteChatById,
   createScheduledPost,
@@ -26,6 +28,7 @@ router.post('/webhook/complete', handleWebhookComplete);
 
 // Callback endpoint (must be public so Twitter can redirect user's browser here)
 router.get('/integrations/twitter/callback', getTwitterOauthCallback);
+router.get('/integrations/linkedin/callback', getLinkedinOauthCallback);
 
 // Public pending schedules endpoint (securely authenticated via secret checking in controller)
 router.get('/scheduled/pending', getPendingScheduledPosts);
@@ -40,6 +43,7 @@ router.delete('/chat/:chatId', deleteChatById);
 router.get('/integrations', getIntegrations);
 router.delete('/integrations/:integrationId', deleteIntegration);
 router.post('/integrations/connect', requireSubscription, connectIntegration); // Modal save hook endpoint
+router.get('/integrations/linkedin/oauth-url', requireSubscription, getLinkedinOauthUrl);
 router.get('/integrations/twitter/oauth-url', requireSubscription, getTwitterOauthUrl);
 router.get('/master-apps', getMasterApps);
 

@@ -375,27 +375,29 @@ export default function DashboardPage() {
     }
 
     if (!existingIntegration) {
-      if (app.iconKey.toLowerCase() === 'twitter') {
-        // Trigger Twitter OAuth 2.0 Redirection
+      if (app.iconKey.toLowerCase() === 'twitter' || app.iconKey.toLowerCase() === 'linkedin') {
+        // Trigger OAuth 2.0 Redirection
+        const platform = app.iconKey.toLowerCase();
+        const platformDisplayName = platform === 'twitter' ? 'Twitter / X' : 'LinkedIn';
         (async () => {
           try {
-            setStatusMessage({ type: "info", text: "Connecting to Twitter / X..." });
+            setStatusMessage({ type: "info", text: `Connecting to ${platformDisplayName}...` });
             const token = await getToken();
             const API_URL = import.meta.env.VITE_API_URL;
-            const res = await fetch(`${API_URL}/api/dashboard/integrations/twitter/oauth-url`, {
+            const res = await fetch(`${API_URL}/api/dashboard/integrations/${platform}/oauth-url`, {
               headers: { "Authorization": `Bearer ${token}` }
             });
-            if (!res.ok) throw new Error("Failed to get Twitter auth URL");
+            if (!res.ok) throw new Error(`Failed to get ${platformDisplayName} auth URL`);
             const data = await res.json();
             if (data.url) {
               window.location.href = data.url;
             } else {
-              alert("Twitter OAuth URL not generated. Verify server configuration.");
+              alert(`${platformDisplayName} OAuth URL not generated. Verify server configuration.`);
               setStatusMessage({ type: null, text: "" });
             }
           } catch (error) {
-            console.error("Twitter OAuth error:", error);
-            setStatusMessage({ type: "error", text: "Could not initiate Twitter connection." });
+            console.error(`${platformDisplayName} OAuth error:`, error);
+            setStatusMessage({ type: "error", text: `Could not initiate ${platformDisplayName} connection.` });
           }
         })();
       } else {
