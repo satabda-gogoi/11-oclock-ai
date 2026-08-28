@@ -67,7 +67,7 @@ export default function ContactPage() {
             <MapPin className="w-5 h-5 text-primary" />
             <h4 className="font-bold text-xs">HQ Location</h4>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Guwahati, Assam,<br />India
+              Dibrugarh, Assam,<br />India
             </p>
           </div>
         </section>
