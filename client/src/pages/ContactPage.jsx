@@ -53,7 +53,7 @@ export default function ContactPage() {
             <Mail className="w-5 h-5 text-primary" />
             <h4 className="font-bold text-xs">Email Support</h4>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              support@11oclock.ai
+              11oclockai@gmail.com
             </p>
           </div>
           <div className="p-4 rounded-xl border border-custom bg-card/10 space-y-2">
