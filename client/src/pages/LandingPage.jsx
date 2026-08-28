@@ -3,7 +3,7 @@ import { SignInButton, SignUpButton, useAuth } from "@clerk/clerk-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import Footer from "../layout/Footer";
-import { Sparkles, Zap, Shield, Calendar, Layers, Globe, MessageSquare, ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
+import { Sparkles, Zap, Shield, Calendar, Layers, Globe, MessageSquare, ArrowRight, CheckCircle2, ChevronDown, Menu, X } from "lucide-react";
 
 export default function LandingPage() {
   const { darkMode, setDarkMode } = useTheme();
@@ -256,8 +256,8 @@ export default function LandingPage() {
               </>
             )}
 
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 text-muted-foreground border border-custom rounded-lg">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-custom rounded-xl transition-all">
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
@@ -265,13 +265,39 @@ export default function LandingPage() {
 
       {/* MOBILE MENU */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-custom bg-card/90 backdrop-blur-lg px-6 py-4 space-y-3">
-          <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground">Features</a>
-          <a href="#capabilities" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground">Capabilities</a>
-          <a href="#workflow" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground">Workflow</a>
-          <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground">FAQ</a>
-          <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground">Pricing</Link>
-          <Link to="/guide" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground">Guide</Link>
+        <div className="md:hidden border-b border-custom bg-background/95 backdrop-blur-lg px-6 py-6 space-y-4 animate-fadeIn">
+          <nav className="flex flex-col gap-4 text-xs font-mono uppercase tracking-wider text-muted-foreground">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Features</a>
+            <a href="#capabilities" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Capabilities</a>
+            <a href="#workflow" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Workflow</a>
+            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">FAQ</a>
+            <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Pricing</Link>
+            <Link to="/guide" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Guide</Link>
+          </nav>
+          
+          <div className="pt-4 border-t border-custom flex flex-col gap-2">
+            {isSignedIn ? (
+              <button 
+                onClick={() => { setMobileMenuOpen(false); navigate("/workspace"); }} 
+                className="w-full py-2.5 text-center text-xs font-semibold rounded-lg bg-foreground text-background hover:opacity-90 transition-all"
+              >
+                Go to Console
+              </button>
+            ) : (
+              <>
+                <SignInButton mode="modal">
+                  <button className="w-full py-2.5 text-center text-xs font-semibold text-muted-foreground hover:text-foreground border border-custom rounded-lg transition-colors">
+                    Sign In
+                  </button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="w-full py-2.5 text-center text-xs font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/95 transition-all">
+                    Get Started
+                  </button>
+                </SignUpButton>
+              </>
+            )}
+          </div>
         </div>
       )}
 
@@ -279,41 +305,40 @@ export default function LandingPage() {
       <main className="relative flex-1 w-full max-w-6xl mx-auto px-6 pt-20 sm:pt-28 pb-20 z-10 space-y-32">
         
         {/* HERO HEADER */}
-        <section className="flex flex-col items-center justify-center text-center space-y-6">
+        <section className="flex flex-col items-center justify-center text-center space-y-6 max-w-4xl mx-auto px-4">
           <div
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-[10px] font-mono font-bold tracking-wider text-primary border border-primary/25 uppercase"
-            style={{ boxShadow: '0 0 0 1px rgba(37,99,235,0.05), 0 4px 24px -6px rgba(37,99,235,0.35)' }}
+            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 text-[10px] font-mono font-bold tracking-wider text-primary border border-primary/20 uppercase shadow-sm"
           >
             <Sparkles className="w-3.5 h-3.5 animate-pulse" />
             11 o'clock is Live
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight max-w-3xl leading-tight">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-3xl leading-[1.1] bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/75">
             Unified Content Engine for Professional Publishing
           </h1>
 
-          <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
             Write, optimize, and schedule high-performing social copy across your professional channels. Build presence without context switching.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-4 w-full sm:w-auto">
             {isSignedIn ? (
               <button 
                 onClick={() => navigate("/workspace")} 
-                className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-lg hover:bg-primary/95 transition-all cursor-pointer shadow"
+                className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-lg hover:bg-primary/95 transition-all cursor-pointer shadow-lg shadow-primary/10 hover:shadow-primary/20"
               >
                 Go to Workspace Console
               </button>
             ) : (
               <SignUpButton mode="modal">
-                <button className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-lg hover:bg-primary/95 transition-all cursor-pointer shadow">
+                <button className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-lg hover:bg-primary/95 transition-all cursor-pointer shadow-lg shadow-primary/10 hover:shadow-primary/20">
                   Start Writing Free
                 </button>
               </SignUpButton>
             )}
             <a 
               href="#workflow" 
-              className="w-full sm:w-auto px-6 py-3 text-xs font-semibold bg-card border border-custom hover:bg-muted rounded-lg transition-all text-center"
+              className="w-full sm:w-auto px-6 py-3 text-xs font-semibold bg-card border border-custom hover:bg-muted rounded-lg transition-all text-center cursor-pointer"
             >
               See how it works
             </a>
@@ -424,11 +449,26 @@ export default function LandingPage() {
         </div>
 
         {/* LOGO TICKER */}
-        <section className="border-y border-custom py-6 text-center">
-          <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted-foreground mb-4">Supported Social Channels</p>
-          <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-16 text-sm font-semibold tracking-widest text-foreground/50 uppercase font-mono">
-            <span>LinkedIn</span>
-            <span>Twitter / X</span>
+        <section className="border-y border-custom py-8 text-center bg-card/5">
+          <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted-foreground/60 mb-6">Supported Social Channels</p>
+          <div className="flex flex-row justify-center items-center gap-8 sm:gap-16 text-muted-foreground/40 hover:text-muted-foreground/80 transition-colors">
+            
+            {/* LinkedIn Badge */}
+            <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider select-none hover:text-foreground transition-colors cursor-default">
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+              <span>LinkedIn</span>
+            </div>
+
+            {/* X / Twitter Badge */}
+            <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider select-none hover:text-foreground transition-colors cursor-default">
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              <span>Twitter / X</span>
+            </div>
+
           </div>
         </section>
 
