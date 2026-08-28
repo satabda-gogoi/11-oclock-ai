@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const [promptInput, setPromptInput] = useState("");
   
   // Layout Controls & Core Matrix States
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   const [promptHistory, setPromptHistory] = useState([]);
   const [scheduledPosts, setScheduledPosts] = useState([]);
   const [masterApps, setMasterApps] = useState([]);
@@ -134,6 +134,10 @@ export default function DashboardPage() {
   // Fetch active chat details if chatId changes
   useEffect(() => {
     if (!session) return;
+
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
 
     let active = true;
 
@@ -657,9 +661,17 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <Header />
+      <Header onMenuClick={() => setSidebarOpen(true)} />
 
       <div className="flex-1 flex flex-row overflow-hidden relative">
+        {/* Mobile Sidebar Backdrop Overlay */}
+        {sidebarOpen && (
+          <div 
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden animate-fadeIn"
+          />
+        )}
+
         <Sidebar 
           isOpen={sidebarOpen} 
           setIsOpen={setSidebarOpen} 

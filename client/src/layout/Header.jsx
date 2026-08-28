@@ -1,8 +1,8 @@
 import { UserButton } from "@clerk/clerk-react";
 import { useTheme } from "../context/ThemeContext";
-import { Sun, Moon } from "lucide-react"; // Imported clean vector icons
+import { Sun, Moon, Menu } from "lucide-react"; // Import Menu icon
 
-export default function Header() {
+export default function Header({ onMenuClick }) {
   const { darkMode, setDarkMode } = useTheme();
 
   return (
@@ -11,6 +11,17 @@ export default function Header() {
         
         {/* Brand System Identifiers */}
         <div className="flex items-center gap-3">
+          {onMenuClick && (
+            <button
+              type="button"
+              onClick={onMenuClick}
+              className="md:hidden p-1.5 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground border border-custom transition-colors cursor-pointer mr-1"
+              aria-label="Open sidebar"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
+
           <div className={`h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 select-none pointer-events-none ${darkMode ? "bg-white" : "bg-black"}`}>
             <img 
               src={darkMode ? "/logo_black.png" : "/logo_white.png"} 
@@ -20,7 +31,7 @@ export default function Header() {
             />
           </div>
           <span className="text-sm font-bold tracking-tight">Console Engine</span>
-          <span className="font-mono text-[10px] bg-muted text-muted-foreground border border-custom px-1.5 py-0.5 rounded">
+          <span className="hidden sm:inline-block font-mono text-[10px] bg-muted text-muted-foreground border border-custom px-1.5 py-0.5 rounded">
             v1 eleven
           </span>
         </div>
