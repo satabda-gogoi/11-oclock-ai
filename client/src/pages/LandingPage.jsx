@@ -206,12 +206,12 @@ export default function LandingPage() {
               />
             </div>
             <span className="font-bold tracking-tight text-sm text-foreground">11 o'clock</span>
-            <span className="text-[10px] font-mono text-muted-foreground bg-muted border border-custom px-2 py-0.5 rounded">
+            <span className="hidden sm:inline-block text-[10px] font-mono text-muted-foreground bg-muted border border-custom px-2 py-0.5 rounded">
               v1 eleven
             </span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-8 text-xs font-mono uppercase tracking-wider text-muted-foreground">
+          <nav className="hidden md:flex items-center gap-6 text-xs font-mono uppercase tracking-wider text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#capabilities" className="hover:text-foreground transition-colors">Capabilities</a>
             <a href="#workflow" className="hover:text-foreground transition-colors">Workflow</a>
@@ -223,7 +223,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-xl text-muted-foreground hover:bg-muted transition-colors cursor-pointer border border-transparent hover:border-custom"
+              className="hidden sm:inline-flex p-2 rounded-xl text-muted-foreground hover:bg-muted transition-colors cursor-pointer border border-transparent hover:border-custom"
               aria-label="Toggle Theme"
             >
               {darkMode ? (
@@ -243,7 +243,7 @@ export default function LandingPage() {
             ) : (
               <>
                 <SignInButton mode="modal">
-                  <button className="hidden sm:block text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer transition-colors px-2">
+                  <button className="hidden md:block text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer transition-colors px-2">
                     Sign In
                   </button>
                 </SignInButton>
@@ -266,6 +266,28 @@ export default function LandingPage() {
       {/* MOBILE MENU */}
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-custom bg-background/95 backdrop-blur-lg px-6 py-6 space-y-4 animate-fadeIn">
+          
+          {/* Mobile Theme Selector */}
+          <div className="flex items-center justify-between border-b border-custom pb-3 mb-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">App Theme</span>
+            <button 
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-xl text-muted-foreground hover:bg-muted border border-custom flex items-center gap-2 text-xs font-semibold"
+            >
+              {darkMode ? (
+                <>
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m0 13.5V21M4.22 4.22l1.58 1.58m12.42 12.42l1.58 1.58M3 12h2.25m13.5 0H21M4.22 19.78l1.58-1.58m12.42-12.42l1.58-1.58M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" /></svg>
+                  <span>Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 12.83A9.54 9.54 0 0112 21.75c-5.28 0-9.5-4.22-9.5-9.5a9.54 9.54 0 0112.58-9.04 7.46 7.46 0 001.92 6.13 7.46 7.46 0 006.25 3.49z" /></svg>
+                  <span>Dark Mode</span>
+                </>
+              )}
+            </button>
+          </div>
+
           <nav className="flex flex-col gap-4 text-xs font-mono uppercase tracking-wider text-muted-foreground">
             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Features</a>
             <a href="#capabilities" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Capabilities</a>
@@ -313,7 +335,7 @@ export default function LandingPage() {
             11 o'clock is Live
           </div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-3xl leading-[1.1] bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/75">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-3xl leading-[1.1] text-foreground">
             Unified Content Engine for Professional Publishing
           </h1>
 
