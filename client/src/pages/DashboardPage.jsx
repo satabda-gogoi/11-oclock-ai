@@ -597,16 +597,8 @@ export default function DashboardPage() {
               100% { transform: rotate(330deg); }
             }
             @keyframes dialPulse {
-              0%, 100% { transform: scale(1); opacity: 0.8; }
-              50% { transform: scale(1.03); opacity: 1; }
-            }
-            @keyframes ringRotate {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-            @keyframes textFadeIn {
-              0% { opacity: 0; transform: translateY(12px); letter-spacing: 0.1em; }
-              100% { opacity: 1; transform: translateY(0); letter-spacing: 0.25em; }
+              0%, 100% { transform: scale(1); opacity: 0.9; }
+              50% { transform: scale(1.02); opacity: 1; }
             }
             @keyframes splashFadeOut {
               0% { opacity: 1; pointer-events: auto; }
@@ -615,28 +607,31 @@ export default function DashboardPage() {
           `}</style>
 
           <div className="relative flex flex-col items-center justify-center">
-            {/* Outer concentric pulsed ring */}
-            <div 
-              className="absolute w-48 h-48 rounded-full border border-dashed border-primary/20 animate-[ringRotate_20s_linear_infinite]"
-              style={{ pointerEvents: 'none' }}
-            />
             
             {/* Clock Face Dial Container */}
             <div 
-              className="relative w-36 h-36 rounded-full border border-custom bg-card/45 flex items-center justify-center shadow-2xl shadow-primary/5 animate-[dialPulse_2.5s_ease-in-out_infinite]"
+              className="relative w-24 h-24 rounded-full border border-custom bg-card/45 flex items-center justify-center shadow-xl shadow-primary/5 animate-[dialPulse_2.5s_ease-in-out_infinite]"
             >
-              {/* Dial ticks at 12, 3, 6, 9 */}
-              <span className="absolute top-2 w-0.5 h-1.5 bg-muted-foreground/40 rounded-full" />
-              <span className="absolute right-2 w-1.5 h-0.5 bg-muted-foreground/40 rounded-full" />
-              <span className="absolute bottom-2 w-0.5 h-1.5 bg-muted-foreground/40 rounded-full" />
-              <span className="absolute left-2 w-1.5 h-0.5 bg-muted-foreground/40 rounded-full" />
+              {/* Ticks representation vector */}
+              <svg className="absolute inset-0 w-full h-full text-muted-foreground/30" viewBox="0 0 100 100">
+                {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
+                  <line 
+                    key={deg}
+                    x1="50" y1="6" x2="50" y2="12" 
+                    stroke="currentColor" 
+                    strokeWidth="1.5" 
+                    strokeLinecap="round"
+                    transform={`rotate(${deg} 50 50)`} 
+                  />
+                ))}
+              </svg>
 
               {/* Center Pin */}
-              <div className="w-2.5 h-2.5 rounded-full bg-primary z-20 shadow-sm" />
+              <div className="w-1.5 h-1.5 rounded-full bg-primary z-20 shadow-sm" />
 
               {/* Hour Hand (Sweep from 12 o'clock to 11 o'clock) */}
               <div 
-                className="absolute bottom-1/2 left-1/2 w-0.5 h-12 bg-primary origin-bottom -translate-x-1/2 z-10 rounded-full"
+                className="absolute bottom-1/2 left-1/2 w-0.5 h-8 bg-primary origin-bottom -translate-x-1/2 z-10 rounded-full"
                 style={{
                   animation: "clockHandSweep 1.6s cubic-bezier(0.25, 1, 0.5, 1.15) 0.3s forwards",
                   transform: "rotate(0deg)",
@@ -645,18 +640,9 @@ export default function DashboardPage() {
               />
               
               {/* Minute Hand (stays static at 12 o'clock) */}
-              <div className="absolute bottom-1/2 left-1/2 w-0.5 h-14 bg-muted-foreground/30 origin-bottom -translate-x-1/2 z-0 rounded-full" />
+              <div className="absolute bottom-1/2 left-1/2 w-0.5 h-10 bg-muted-foreground/30 origin-bottom -translate-x-1/2 z-0 rounded-full" />
             </div>
 
-            {/* Platform Text Banner */}
-            <div className="text-center mt-8 space-y-1.5">
-              <h1 className="text-sm font-bold font-mono tracking-[0.25em] text-foreground uppercase animate-[textFadeIn_1s_cubic-bezier(0.16,1,0.3,1)_0.6s_both]">
-                11 o'clock
-              </h1>
-              <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] animate-[textFadeIn_1.2s_cubic-bezier(0.16,1,0.3,1)_0.8s_both]">
-                Workspace Console
-              </p>
-            </div>
           </div>
         </div>
       )}
