@@ -74,6 +74,18 @@ export default function LandingPage() {
           0%, 100% { opacity: 0.45; }
           50% { opacity: 0.85; }
         }
+        @keyframes hzFloat {
+          0%, 100% { transform: translate3d(0, 0, 0) rotateX(55deg) rotateY(0deg) rotateZ(-15deg); }
+          50% { transform: translate3d(0, -8px, 0) rotateX(51deg) rotateY(1deg) rotateZ(-12deg); }
+        }
+        @keyframes hzOrbitLink {
+          0% { transform: translate3d(-50%, -50%, 0) rotate(0deg) translate3d(130px, 0, 10px) rotate(0deg); }
+          100% { transform: translate3d(-50%, -50%, 0) rotate(360deg) translate3d(130px, 0, 10px) rotate(-360deg); }
+        }
+        @keyframes hzOrbitTwit {
+          0% { transform: translate3d(-50%, -50%, 0) rotate(180deg) translate3d(130px, 0, 20px) rotate(-180deg); }
+          100% { transform: translate3d(-50%, -50%, 0) rotate(540deg) translate3d(130px, 0, 20px) rotate(-540deg); }
+        }
         .horizon-anim { will-change: transform; }
         @media (prefers-reduced-motion: reduce) {
           .horizon-anim { animation: none !important; will-change: auto; }
@@ -327,43 +339,145 @@ export default function LandingPage() {
       <main className="relative flex-1 w-full max-w-6xl mx-auto px-6 pt-20 sm:pt-28 pb-20 z-10 space-y-32">
         
         {/* HERO HEADER */}
-        <section className="flex flex-col items-center justify-center text-center space-y-6 max-w-4xl mx-auto px-4">
-          <div
-            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 text-[10px] font-mono font-bold tracking-wider text-primary border border-primary/20 uppercase shadow-sm"
-          >
-            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-            11 o'clock is Live
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-8 pb-12 overflow-visible">
+          
+          {/* Left Column: Title & Action Controls */}
+          <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
+            <div
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 text-[10px] font-mono font-bold tracking-wider text-primary border border-primary/20 uppercase shadow-sm"
+            >
+              <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+              11 o'clock is Live
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-foreground">
+              Unified Content Engine for Professional Publishing
+            </h1>
+
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              Write, optimize, and schedule high-performing social copy across your professional channels. Build presence without context switching.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center pt-4 w-full sm:w-auto">
+              {isSignedIn ? (
+                <button 
+                  onClick={() => navigate("/workspace")} 
+                  className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-lg hover:bg-primary/95 transition-all cursor-pointer shadow-lg shadow-primary/10 hover:shadow-primary/20"
+                >
+                  Go to Workspace Console
+                </button>
+              ) : (
+                <SignUpButton mode="modal">
+                  <button className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-lg hover:bg-primary/95 transition-all cursor-pointer shadow-lg shadow-primary/10 hover:shadow-primary/20">
+                    Start Writing Free
+                  </button>
+                </SignUpButton>
+              )}
+              <a 
+                href="#workflow" 
+                className="w-full sm:w-auto px-6 py-3 text-xs font-semibold bg-card border border-custom hover:bg-muted rounded-lg transition-all text-center cursor-pointer"
+              >
+                See how it works
+              </a>
+            </div>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-3xl leading-[1.1] text-foreground">
-            Unified Content Engine for Professional Publishing
-          </h1>
-
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Write, optimize, and schedule high-performing social copy across your professional channels. Build presence without context switching.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-4 w-full sm:w-auto">
-            {isSignedIn ? (
-              <button 
-                onClick={() => navigate("/workspace")} 
-                className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-lg hover:bg-primary/95 transition-all cursor-pointer shadow-lg shadow-primary/10 hover:shadow-primary/20"
-              >
-                Go to Workspace Console
-              </button>
-            ) : (
-              <SignUpButton mode="modal">
-                <button className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-lg hover:bg-primary/95 transition-all cursor-pointer shadow-lg shadow-primary/10 hover:shadow-primary/20">
-                  Start Writing Free
-                </button>
-              </SignUpButton>
-            )}
-            <a 
-              href="#workflow" 
-              className="w-full sm:w-auto px-6 py-3 text-xs font-semibold bg-card border border-custom hover:bg-muted rounded-lg transition-all text-center cursor-pointer"
+          {/* Right Column: 3D Isometric Clock Dial Assembly */}
+          <div className="lg:col-span-5 flex items-center justify-center relative w-full h-[300px] sm:h-[380px] overflow-visible">
+            {/* Soft Ambient Radial Background Glow */}
+            <div className="absolute w-[260px] h-[260px] rounded-full bg-primary/10 blur-[60px] pointer-events-none z-0" />
+            
+            {/* Perspective Viewport Box */}
+            <div 
+              className="relative w-[280px] h-[280px] select-none pointer-events-none z-10"
+              style={{ perspective: '1000px' }}
             >
-              See how it works
-            </a>
+              {/* Three-Dimensional Floating Ring Structure */}
+              <div 
+                className="w-full h-full relative"
+                style={{ 
+                  transformStyle: 'preserve-3d', 
+                  animation: 'hzFloat 7s ease-in-out infinite',
+                  transform: 'rotateX(55deg) rotateY(0deg) rotateZ(-15deg)'
+                }}
+              >
+                {/* 3D Base Outer Dial Ticks Ring */}
+                <div 
+                  className="absolute inset-0 rounded-full border border-custom bg-card/10 backdrop-blur-[2px] flex items-center justify-center"
+                  style={{ transform: 'translateZ(0px)', transformStyle: 'preserve-3d' }}
+                >
+                  <svg className="w-full h-full p-2 text-muted-foreground/30 animate-spin" style={{ animationDuration: '40s' }} viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1, 3" />
+                    <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="3, 6" />
+                  </svg>
+                </div>
+
+                {/* 3D Glassmorphic Clock Face Plate */}
+                <div 
+                  className="absolute inset-4 rounded-full border border-white/10 bg-white/[0.03] shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] flex items-center justify-center"
+                  style={{ transform: 'translateZ(15px)', transformStyle: 'preserve-3d' }}
+                >
+                  {/* Compass/Clock Ticks */}
+                  <div className="absolute top-3 w-1.5 h-1.5 rounded-full bg-primary/80" />
+                  <div className="absolute right-3 w-1 h-1 rounded-full bg-muted-foreground/45" />
+                  <div className="absolute bottom-3 w-1 h-1 rounded-full bg-muted-foreground/45" />
+                  <div className="absolute left-3 w-1 h-1 rounded-full bg-muted-foreground/45" />
+
+                  {/* 11 o'clock specific indicator tags */}
+                  <span className="absolute text-[10px] font-mono font-black text-muted-foreground/60 top-5 left-7" style={{ transform: 'rotateZ(15deg)' }}>11</span>
+                  <span className="absolute text-[10px] font-mono font-black text-muted-foreground/30 top-4 right-12" style={{ transform: 'rotateZ(-15deg)' }}>12</span>
+                </div>
+
+                {/* Hour Hand: Set Exactly at 11 o'clock position (30 degrees left of 12) */}
+                <div 
+                  className="absolute top-1/2 left-1/2 w-1.5 h-14 bg-gradient-to-t from-primary to-blue-400 origin-bottom rounded-full"
+                  style={{ 
+                    transform: 'translate3d(-50%, -100%, 25px) rotateZ(-30deg)',
+                    boxShadow: '0 0 10px rgba(37,99,235,0.45)'
+                  }}
+                />
+
+                {/* Minute Hand: Set Exactly at 12 o'clock position (0 degrees) */}
+                <div 
+                  className="absolute top-1/2 left-1/2 w-1 h-[72px] bg-foreground/80 origin-bottom rounded-full"
+                  style={{ 
+                    transform: 'translate3d(-50%, -100%, 28px) rotateZ(0deg)',
+                  }}
+                />
+
+                {/* Center Hub Core Cap */}
+                <div 
+                  className="absolute top-1/2 left-1/2 w-4 h-4 rounded-full bg-foreground border border-white/20"
+                  style={{ 
+                    transform: 'translate3d(-50%, -50%, 35px)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                  }}
+                />
+
+                {/* Orbiting LinkedIn Satellite Node (w_member_social) */}
+                <div 
+                  className="absolute top-1/2 left-1/2 w-8 h-8 rounded-full bg-blue-600/10 border border-blue-500/30 flex items-center justify-center text-blue-500 font-mono text-[10px] font-bold shadow-md shadow-blue-500/10"
+                  style={{ 
+                    animation: 'hzOrbitLink 14s linear infinite',
+                    transformStyle: 'preserve-3d'
+                  }}
+                >
+                  in
+                </div>
+
+                {/* Orbiting Twitter/X Satellite Node (oauth_token) */}
+                <div 
+                  className="absolute top-1/2 left-1/2 w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-400 font-mono text-[9px] font-bold shadow-md shadow-cyan-500/10"
+                  style={{ 
+                    animation: 'hzOrbitTwit 18s linear infinite',
+                    transformStyle: 'preserve-3d'
+                  }}
+                >
+                  𝕏
+                </div>
+
+              </div>
+            </div>
           </div>
         </section>
 
