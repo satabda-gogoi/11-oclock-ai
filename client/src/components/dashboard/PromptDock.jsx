@@ -4,8 +4,22 @@ import { supabase } from "../../utils/supabaseClient";
 
 export default function PromptDock({ promptInput, setPromptInput, isExecuting, onSubmit, activeApp, isSubscribed = true, onUpgradeClick }) {
   const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
   const [attachedFiles, setAttachedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleFormSubmission(e);
+    }
+  };
+
+  const handleTextareaChange = (e) => {
+    setPromptInput(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+  };
   const [showSchedulePopover, setShowSchedulePopover] = useState(false);
   const [isScheduled, setIsScheduled] = useState(false);
   const [scheduleType, setScheduleType] = useState("once"); // "once" or "daily"
@@ -105,6 +119,10 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
     setIsScheduled(false);
     setScheduledTime("");
     setDailyTime("");
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
   };
 
   return (
@@ -237,7 +255,7 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
       )}
 
       {/* 🛠️ CORE ACTION FORM ASSEMBLY ROW */}
-      <form onSubmit={handleFormSubmission} className="flex flex-row items-center gap-2 relative">
+      <form onSubmit={handleFormSubmission} className="flex flex-row items-end gap-2 relative">
         <input 
           type="file" 
           ref={fileInputRef} 
@@ -257,7 +275,7 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
             }
           }}
           disabled={isExecuting || isUploading}
-          className="flex items-center justify-center h-10 w-10 rounded-xl bg-background border border-border hover:bg-accent/40 text-muted-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center justify-center h-10 w-10 rounded-xl bg-background border border-border hover:bg-accent/40 text-muted-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed mb-0.5"
         >
           <Paperclip className="h-4 w-4" />
         </button>
@@ -273,7 +291,7 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
             }
           }}
           disabled={isExecuting || isUploading || !activeApp}
-          className={`flex items-center justify-center h-10 w-10 rounded-xl border transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer ${
+          className={`flex items-center justify-center h-10 w-10 rounded-xl border transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer mb-0.5 ${
             isScheduled 
               ? "bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500/20" 
               : "bg-background border-border hover:bg-accent/40 text-muted-foreground"
@@ -283,11 +301,13 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
           <Clock className="h-4 w-4" />
         </button>
 
-        <div className="flex-1 relative flex items-center bg-background border border-border rounded-xl focus-within:border-primary transition-colors px-3 py-1.5">
-          <input
-            type="text"
+        <div className="flex-1 relative flex items-end bg-background border border-border rounded-xl focus-within:border-primary transition-colors px-3 py-1.5 min-h-[40px]">
+          <textarea
+            ref={textareaRef}
+            rows={1}
             value={promptInput}
-            onChange={(e) => setPromptInput(e.target.value)}
+            onChange={handleTextareaChange}
+            onKeyDown={handleKeyDown}
             disabled={isExecuting}
             placeholder={
               !isSubscribed
@@ -298,14 +318,14 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
                 ? "Streaming file assets securely down to bucket storage..." 
                 : `Draft a prompt command sequence for ${activeApp.name}...`
             }
-            className="w-full bg-transparent border-0 outline-none p-1 text-sm text-foreground placeholder:text-muted-foreground disabled:cursor-not-allowed"
+            className="w-full bg-transparent border-0 outline-none p-1 text-sm text-foreground placeholder:text-muted-foreground disabled:cursor-not-allowed resize-none max-h-36 scrollbar-none"
           />
         </div>
 
         <button
           type="submit"
           disabled={isExecuting || isUploading || (!promptInput.trim() && attachedFiles.length === 0)}
-          className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-40"
+          className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-40 mb-0.5"
         >
           <Send className="h-4 w-4" />
         </button>
