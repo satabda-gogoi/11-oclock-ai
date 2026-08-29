@@ -48,8 +48,8 @@ export default function AppsDrawer({ isOpen, masterApps, integrations, onChannel
                 connectedAccount 
                   ? isChannelFocused
                     ? "bg-blue-600/10 border-blue-500/40 shadow-md shadow-blue-500/5 cursor-pointer" // Glowing Active State
-                    : "bg-background/40 border-white/5 hover:bg-background/60 cursor-pointer" // Inactive Connected Channel
-                  : "bg-transparent border-dashed border-white/10 hover:border-blue-500/40 hover:bg-background/60 cursor-pointer" // Unconnected Channel
+                    : "bg-muted/40 border-custom/80 hover:bg-muted/80 cursor-pointer" // Inactive Connected Channel
+                  : "bg-transparent border-dashed border-custom/60 hover:border-blue-500/40 hover:bg-muted/60 cursor-pointer" // Unconnected Channel
               } ${!isOpen && "justify-center"}`}
             >
               <div className="flex items-center gap-3 min-w-0 flex-1">

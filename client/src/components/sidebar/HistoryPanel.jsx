@@ -2,7 +2,7 @@ import { History, MessageSquare, Trash2 } from 'lucide-react';
 
 export default function HistoryPanel({ isOpen, history = [], onSelectHistory, onDeleteHistory }) {
   return (
-    <div className="flex-1 p-3 overflow-y-auto space-y-2 max-w-full scrollbar-none border-b border-white/5">
+    <div className="flex-1 p-3 overflow-y-auto space-y-2 max-w-full scrollbar-none border-b border-custom/60">
       <div className={`flex items-center gap-3 px-2 py-1 text-muted-foreground mb-2 ${!isOpen ? 'justify-center' : ''}`}>
         <History className="w-4 h-4 flex-shrink-0" />
         {isOpen && <span className="text-xs font-bold uppercase tracking-wider animate-fadeIn">History</span>}
@@ -16,7 +16,7 @@ export default function HistoryPanel({ isOpen, history = [], onSelectHistory, on
             key={item._id}
             type="button"
             onClick={() => onSelectHistory?.(item)}
-            className={`w-full text-left p-2.5 rounded-xl border border-transparent bg-background/40 hover:bg-background hover:border-custom transition-all group flex items-center gap-3 cursor-pointer overflow-hidden ${!isOpen ? 'justify-center' : ''}`}
+            className={`w-full text-left p-2.5 rounded-xl border border-transparent bg-muted/40 hover:bg-muted hover:border-custom transition-all group flex items-center gap-3 cursor-pointer overflow-hidden ${!isOpen ? 'justify-center' : ''}`}
           >
             
             <div className={`flex flex-col min-w-0 flex-1 transition-opacity duration-200 ${isOpen ? 'opacity-100 block' : 'opacity-0 hidden'}`}>

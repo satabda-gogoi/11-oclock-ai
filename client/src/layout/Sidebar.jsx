@@ -23,13 +23,13 @@ export default function Sidebar({
 
   return (
     <aside 
-      className={`fixed inset-y-0 left-0 h-full z-50 flex flex-col border-r border-custom bg-background/95 md:bg-card/30 backdrop-blur-xl transition-all duration-300 ease-in-out select-none md:static md:h-[calc(100vh-4rem)] md:z-30 ${
+      className={`fixed inset-y-0 left-0 h-full z-50 flex flex-col border-r border-custom bg-background/98 md:bg-card/30 backdrop-blur-xl transition-all duration-300 ease-in-out select-none shadow-2xl md:shadow-none md:static md:h-[calc(100vh-4rem)] md:z-30 ${
         isOpen 
           ? "w-72 translate-x-0" 
           : "w-16 -translate-x-full md:translate-x-0"
       }`}
     >
-      <div className={`p-4 border-b border-white/5 flex items-center ${isOpen ? "justify-between" : "justify-center"}`}>
+      <div className={`p-4 border-b border-custom/60 flex items-center ${isOpen ? "justify-between" : "justify-center"}`}>
         {isOpen && (
           <span className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground/70 animate-fadeIn">
             Recent Activity
@@ -45,7 +45,7 @@ export default function Sidebar({
       </div>
 
       {/* New Chat Button Row */}
-      <div className="p-3 border-b border-white/5 flex flex-col items-center">
+      <div className="p-3 border-b border-custom/60 flex flex-col items-center">
         <button
           type="button"
           onClick={() => navigate("/workspace")}
@@ -69,7 +69,7 @@ export default function Sidebar({
           /> 
           
           {/* ⏰ SCHEDULED POSTS SECTION */}
-          <div className={`p-3 border-b border-white/5 flex flex-col min-h-0 transition-all ${
+          <div className={`p-3 border-b border-custom/60 flex flex-col min-h-0 transition-all ${
             scheduledCollapsed ? "h-auto flex-shrink-0" : "flex-1 overflow-hidden"
           }`}>
             <button
@@ -98,7 +98,7 @@ export default function Sidebar({
                   scheduledPosts.map((item) => (
                     <div
                       key={item._id}
-                      className="w-full p-2.5 rounded-xl border border-white/5 bg-background/40 hover:bg-background transition-all group flex items-start gap-3 justify-between overflow-hidden"
+                      className="w-full p-2.5 rounded-xl border border-custom/40 bg-muted/40 hover:bg-muted transition-all group flex items-start gap-3 justify-between overflow-hidden"
                     >
                       <div className="flex flex-col min-w-0 flex-1">
                         <span className="font-bold text-xs truncate text-foreground/90">{item.prompt}</span>
@@ -140,7 +140,7 @@ export default function Sidebar({
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center py-4 border-b border-white/5 gap-4">
+        <div className="flex-1 flex flex-col items-center py-4 border-b border-custom/60 gap-4">
           <button
             type="button"
             onClick={() => {
