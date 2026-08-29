@@ -489,6 +489,17 @@ export default function DashboardPage() {
     e.preventDefault();
     if ((!promptInput.trim() && attachments.length === 0) || !activeApp || isExecuting) return;
 
+    if (activeApp.iconKey.toLowerCase() === "twitter") {
+      setStatusMessage({ 
+        type: "error", 
+        text: "Twitter / X integration is temporarily unavailable. We are upgrading services." 
+      });
+      setTimeout(() => {
+        setStatusMessage({ type: null, text: "" });
+      }, 5000);
+      return;
+    }
+
     const userPromptPayload = promptInput;
     setPromptInput(""); 
 
