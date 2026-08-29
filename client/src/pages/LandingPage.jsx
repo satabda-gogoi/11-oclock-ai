@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SignInButton, SignUpButton, useAuth } from "@clerk/clerk-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import Footer from "../layout/Footer";
 import { Sparkles, Zap, Shield, Calendar, Layers, Globe, MessageSquare, ArrowRight, CheckCircle2, ChevronDown, Menu, X } from "lucide-react";
+import * as THREE from "three";
 
 export default function LandingPage() {
   const { darkMode, setDarkMode } = useTheme();
@@ -21,6 +22,201 @@ export default function LandingPage() {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
+  }, [darkMode]);
+
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    // 1. Scene setup
+    const scene = new THREE.Scene();
+    
+    // 2. Camera setup
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 8.5;
+
+    // 3. Renderer setup
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvasRef.current,
+      alpha: true,
+      antialias: true,
+      powerPreference: "high-performance"
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // 4. Create clock geometry groups
+    const clockGroup = new THREE.Group();
+    scene.add(clockGroup);
+
+    // Dynamic color selection based on theme mode
+    const getThemeColors = () => {
+      return darkMode ? {
+        dial: 0x334155,       // Slate 700
+        glow: 0x3b82f6,       // Primary Blue
+        hands: 0xf8fafc,      // Slate 50
+        particles: 0x64748b,  // Slate 500
+        linkedin: 0x0077b5,   // LinkedIn Blue
+        twitter: 0x00aeef     // Twitter Cyan
+      } : {
+        dial: 0xcbced4,       // Light Slate
+        glow: 0x2563eb,       // Primary Dark Blue
+        hands: 0x0f172a,      // Slate 900
+        particles: 0x94a3b8,  // Slate 400
+        linkedin: 0x0a66c2,
+        twitter: 0x1d9bf0
+      };
+    };
+
+    let colors = getThemeColors();
+
+    // 4a. Outer Dial Ring
+    const dialGeom = new THREE.TorusGeometry(2.5, 0.03, 16, 100);
+    const dialMat = new THREE.MeshBasicMaterial({ color: colors.dial, wireframe: true });
+    const dial = new THREE.Mesh(dialGeom, dialMat);
+    clockGroup.add(dial);
+
+    // 4b. Inner ticking ring
+    const innerRingGeom = new THREE.TorusGeometry(2.1, 0.015, 8, 80);
+    const innerRingMat = new THREE.MeshBasicMaterial({ color: colors.glow, transparent: true, opacity: 0.4 });
+    const innerRing = new THREE.Mesh(innerRingGeom, innerRingMat);
+    clockGroup.add(innerRing);
+
+    // 4c. Hour Hand (pointing to 11 o'clock: 150 degrees, or 5/6 * Math.PI)
+    const hourHandGeom = new THREE.BoxGeometry(0.12, 1.4, 0.12);
+    hourHandGeom.translate(0, 0.7, 0);
+    const hourHandMat = new THREE.MeshBasicMaterial({ color: colors.hands });
+    const hourHand = new THREE.Mesh(hourHandGeom, hourHandMat);
+    hourHand.rotation.z = (5 / 6) * Math.PI; // 11 o'clock position
+    clockGroup.add(hourHand);
+
+    // 4d. Minute Hand (pointing to 12 o'clock: Math.PI)
+    const minHandGeom = new THREE.BoxGeometry(0.08, 1.9, 0.08);
+    minHandGeom.translate(0, 0.95, 0);
+    const minHandMat = new THREE.MeshBasicMaterial({ color: colors.glow });
+    const minHand = new THREE.Mesh(minHandGeom, minHandMat);
+    minHand.rotation.z = Math.PI; // 12 o'clock position
+    clockGroup.add(minHand);
+
+    // 4e. Center Hub cap
+    const hubGeom = new THREE.CylinderGeometry(0.2, 0.2, 0.2, 32);
+    hubGeom.rotateX(Math.PI / 2);
+    const hubMat = new THREE.MeshBasicMaterial({ color: colors.hands });
+    const hub = new THREE.Mesh(hubGeom, hubMat);
+    clockGroup.add(hub);
+
+    // 4f. Orbiting platform nodes (LinkedIn & X)
+    const orbiterGroup = new THREE.Group();
+    clockGroup.add(orbiterGroup);
+
+    const nodeGeom = new THREE.SphereGeometry(0.2, 16, 16);
+    const liMat = new THREE.MeshBasicMaterial({ color: colors.linkedin });
+    const liNode = new THREE.Mesh(nodeGeom, liMat);
+    orbiterGroup.add(liNode);
+
+    const xMat = new THREE.MeshBasicMaterial({ color: colors.twitter });
+    const xNode = new THREE.Mesh(nodeGeom, xMat);
+    orbiterGroup.add(xNode);
+
+    // 4g. Floating Starfield / Particles cloud
+    const particleCount = 280;
+    const particleGeom = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount * 3; i += 3) {
+      const r = 5 + Math.random() * 8;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      positions[i] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i+1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i+2] = r * Math.cos(phi);
+    }
+    particleGeom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const particleMat = new THREE.PointsMaterial({
+      color: colors.particles,
+      size: 0.05,
+      transparent: true,
+      opacity: 0.6
+    });
+    const starField = new THREE.Points(particleGeom, particleMat);
+    scene.add(starField);
+
+    // 5. Scroll Handler
+    let scrollRatio = 0;
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      scrollRatio = docHeight > 0 ? scrollY / docHeight : 0;
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    // 6. Window Resize Handler
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+
+    // 7. Animation Loop
+    let animationFrameId;
+    let clock = new THREE.Clock();
+
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      const elapsedTime = clock.getElapsedTime();
+
+      // Dynamic rotations
+      starField.rotation.y = elapsedTime * 0.02 + scrollRatio * 0.5;
+      starField.rotation.x = elapsedTime * 0.01;
+
+      // Orbiting satellites
+      const radius = 3.2;
+      liNode.position.x = radius * Math.cos(elapsedTime * 0.4);
+      liNode.position.y = radius * Math.sin(elapsedTime * 0.4);
+      liNode.position.z = Math.sin(elapsedTime * 0.8) * 0.5;
+
+      xNode.position.x = radius * Math.cos(elapsedTime * 0.3 + Math.PI);
+      xNode.position.y = radius * Math.sin(elapsedTime * 0.3 + Math.PI);
+      xNode.position.z = Math.cos(elapsedTime * 0.6) * 0.5;
+
+      // Scroll interpolation mappings:
+      clockGroup.rotation.y = scrollRatio * Math.PI * 2 + elapsedTime * 0.15;
+      clockGroup.rotation.x = 0.8 + scrollRatio * 0.6;
+      clockGroup.rotation.z = -0.3 + scrollRatio * 0.2;
+
+      // Camera positions zoom in and fly-by
+      camera.position.z = 8.5 - scrollRatio * 3.5;
+      camera.position.y = scrollRatio * 1.5;
+      camera.position.x = -scrollRatio * 1.5;
+
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // 8. Cleanup & Disposal
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(animationFrameId);
+
+      dialGeom.dispose();
+      dialMat.dispose();
+      innerRingGeom.dispose();
+      innerRingMat.dispose();
+      hourHandGeom.dispose();
+      hourHandMat.dispose();
+      minHandGeom.dispose();
+      minHandMat.dispose();
+      hubGeom.dispose();
+      hubMat.dispose();
+      nodeGeom.dispose();
+      liMat.dispose();
+      xMat.dispose();
+      particleGeom.dispose();
+      particleMat.dispose();
+      renderer.dispose();
+    };
   }, [darkMode]);
 
   const faqs = [
@@ -382,101 +578,13 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right Column: 3D Isometric Clock Dial Assembly */}
-          <div className="lg:col-span-5 flex items-center justify-center relative w-full h-[300px] sm:h-[380px] overflow-visible">
-            {/* Soft Ambient Radial Background Glow */}
-            <div className="absolute w-[260px] h-[260px] rounded-full bg-primary/10 blur-[60px] pointer-events-none z-0" />
-            
-            {/* Perspective Viewport Box */}
-            <div 
-              className="relative w-[280px] h-[280px] select-none pointer-events-none z-10"
-              style={{ perspective: '1000px' }}
-            >
-              {/* Three-Dimensional Floating Ring Structure */}
-              <div 
-                className="w-full h-full relative"
-                style={{ 
-                  transformStyle: 'preserve-3d', 
-                  animation: 'hzFloat 7s ease-in-out infinite',
-                  transform: 'rotateX(55deg) rotateY(0deg) rotateZ(-15deg)'
-                }}
-              >
-                {/* 3D Base Outer Dial Ticks Ring */}
-                <div 
-                  className="absolute inset-0 rounded-full border border-custom bg-card/10 backdrop-blur-[2px] flex items-center justify-center"
-                  style={{ transform: 'translateZ(0px)', transformStyle: 'preserve-3d' }}
-                >
-                  <svg className="w-full h-full p-2 text-muted-foreground/30 animate-spin" style={{ animationDuration: '40s' }} viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1, 3" />
-                    <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="3, 6" />
-                  </svg>
-                </div>
-
-                {/* 3D Glassmorphic Clock Face Plate */}
-                <div 
-                  className="absolute inset-4 rounded-full border border-white/10 bg-white/[0.03] shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] flex items-center justify-center"
-                  style={{ transform: 'translateZ(15px)', transformStyle: 'preserve-3d' }}
-                >
-                  {/* Compass/Clock Ticks */}
-                  <div className="absolute top-3 w-1.5 h-1.5 rounded-full bg-primary/80" />
-                  <div className="absolute right-3 w-1 h-1 rounded-full bg-muted-foreground/45" />
-                  <div className="absolute bottom-3 w-1 h-1 rounded-full bg-muted-foreground/45" />
-                  <div className="absolute left-3 w-1 h-1 rounded-full bg-muted-foreground/45" />
-
-                  {/* 11 o'clock specific indicator tags */}
-                  <span className="absolute text-[10px] font-mono font-black text-muted-foreground/60 top-5 left-7" style={{ transform: 'rotateZ(15deg)' }}>11</span>
-                  <span className="absolute text-[10px] font-mono font-black text-muted-foreground/30 top-4 right-12" style={{ transform: 'rotateZ(-15deg)' }}>12</span>
-                </div>
-
-                {/* Hour Hand: Set Exactly at 11 o'clock position (30 degrees left of 12) */}
-                <div 
-                  className="absolute top-1/2 left-1/2 w-1.5 h-14 bg-gradient-to-t from-primary to-blue-400 origin-bottom rounded-full"
-                  style={{ 
-                    transform: 'translate3d(-50%, -100%, 25px) rotateZ(-30deg)',
-                    boxShadow: '0 0 10px rgba(37,99,235,0.45)'
-                  }}
-                />
-
-                {/* Minute Hand: Set Exactly at 12 o'clock position (0 degrees) */}
-                <div 
-                  className="absolute top-1/2 left-1/2 w-1 h-[72px] bg-foreground/80 origin-bottom rounded-full"
-                  style={{ 
-                    transform: 'translate3d(-50%, -100%, 28px) rotateZ(0deg)',
-                  }}
-                />
-
-                {/* Center Hub Core Cap */}
-                <div 
-                  className="absolute top-1/2 left-1/2 w-4 h-4 rounded-full bg-foreground border border-white/20"
-                  style={{ 
-                    transform: 'translate3d(-50%, -50%, 35px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
-                  }}
-                />
-
-                {/* Orbiting LinkedIn Satellite Node (w_member_social) */}
-                <div 
-                  className="absolute top-1/2 left-1/2 w-8 h-8 rounded-full bg-blue-600/10 border border-blue-500/30 flex items-center justify-center text-blue-500 font-mono text-[10px] font-bold shadow-md shadow-blue-500/10"
-                  style={{ 
-                    animation: 'hzOrbitLink 14s linear infinite',
-                    transformStyle: 'preserve-3d'
-                  }}
-                >
-                  in
-                </div>
-
-                {/* Orbiting Twitter/X Satellite Node (oauth_token) */}
-                <div 
-                  className="absolute top-1/2 left-1/2 w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-400 font-mono text-[9px] font-bold shadow-md shadow-cyan-500/10"
-                  style={{ 
-                    animation: 'hzOrbitTwit 18s linear infinite',
-                    transformStyle: 'preserve-3d'
-                  }}
-                >
-                  𝕏
-                </div>
-
-              </div>
+          {/* Right Column: Glass Viewport framing the background 3D canvas */}
+          <div className="lg:col-span-5 flex items-center justify-center relative w-full h-[300px] sm:h-[380px] pointer-events-none select-none overflow-visible">
+            {/* Ambient circular frame indicating active console zone */}
+            <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full border border-primary/10 bg-primary/[0.02] backdrop-blur-[1px] flex items-center justify-center animate-pulse shadow-[0_0_50px_rgba(37,99,235,0.03)]">
+              <span className="text-[10px] font-mono text-primary/60 tracking-[0.25em] uppercase font-bold">11:00 Live View</span>
+              {/* Spinning compass ticks inside viewport */}
+              <div className="absolute inset-2 rounded-full border border-dashed border-muted-foreground/10 animate-spin" style={{ animationDuration: '60s' }} />
             </div>
           </div>
         </section>
@@ -772,6 +880,12 @@ export default function LandingPage() {
         </section>
 
       </main>
+
+      {/* Three.js Background Canvas */}
+      <canvas 
+        ref={canvasRef} 
+        className="fixed inset-0 -z-10 w-full h-full pointer-events-none bg-transparent" 
+      />
 
       {/* FOOTER */}
       <Footer />
