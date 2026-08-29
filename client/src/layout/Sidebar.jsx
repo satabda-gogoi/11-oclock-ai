@@ -23,7 +23,7 @@ export default function Sidebar({
 
   return (
     <aside 
-      className={`fixed inset-y-0 left-0 h-full z-50 flex flex-col border-r border-custom bg-background/98 md:bg-card/30 backdrop-blur-xl transition-all duration-300 ease-in-out select-none shadow-2xl md:shadow-none md:static md:h-[calc(100vh-4rem)] md:z-30 ${
+      className={`fixed inset-y-0 left-0 h-full z-50 flex flex-col border-r border-custom bg-background/98 md:bg-card/30 backdrop-blur-xl transition-all duration-300 ease-in-out select-none shadow-2xl md:shadow-none md:static md:h-[calc(100dvh-4rem)] md:z-30 ${
         isOpen 
           ? "w-72 translate-x-0" 
           : "w-16 -translate-x-full md:translate-x-0"

@@ -580,7 +580,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-background text-foreground antialiased overflow-hidden">
+    <div className="h-dvh w-screen flex flex-col bg-background text-foreground antialiased overflow-hidden">
       
       {showSplash && (
         <div 
@@ -687,7 +687,7 @@ export default function DashboardPage() {
           onCancelSchedule={handleCancelSchedule}
         />
 
-        <div className="flex-1 flex flex-col relative h-[calc(100vh-4rem)] bg-background/20">
+        <div className="flex-1 flex flex-col relative h-[calc(100dvh-4rem)] bg-background/20">
           
           <ChatCanvas 
             activeChat={activeChat}
