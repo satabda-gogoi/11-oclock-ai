@@ -302,102 +302,32 @@ export default function LandingPage() {
           contain: 'strict',
         }}
       >
-        {/* Static mesh gradient base — painted once */}
+        {/* Subtle radial ambient dark gradient matching the WebGL vibe */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             background: `
-              radial-gradient(ellipse 620px 420px at 16% 10%, rgba(99,102,241,0.24) 0%, transparent 70%),
-              radial-gradient(ellipse 680px 460px at 86% 6%, rgba(34,211,238,0.20) 0%, transparent 70%),
-              radial-gradient(ellipse 900px 520px at 50% -6%, rgba(37,99,235,0.30) 0%, transparent 65%)
+              radial-gradient(circle 800px at 50% -100px, ${darkMode ? "rgba(37,99,235,0.08)" : "rgba(37,99,235,0.05)"}, transparent 100%)
             `,
-            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 55%, transparent 100%)',
-            maskImage: 'linear-gradient(to bottom, black 0%, black 55%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
+            maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
           }}
         />
 
-        {/* Two soft aurora blobs — blur is set once (static), only transform animates */}
-        <div
-          className="horizon-anim"
-          style={{
-            position: 'absolute', top: '-140px', left: '8%', width: '460px', height: '460px',
-            borderRadius: '50%', background: 'rgba(37,99,235,0.28)', filter: 'blur(70px)',
-            animation: 'hzBlobA 16s ease-in-out infinite',
-          }}
-        />
-        <div
-          className="horizon-anim"
-          style={{
-            position: 'absolute', top: '-100px', right: '6%', width: '420px', height: '420px',
-            borderRadius: '50%', background: 'rgba(34,211,238,0.20)', filter: 'blur(70px)',
-            animation: 'hzBlobB 18s ease-in-out infinite',
-          }}
-        />
-
-        {/* Fine structural grid — static */}
+        {/* Minimal fine layout grid */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundImage: `
-              linear-gradient(rgba(96,150,255,0.13) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(96,150,255,0.13) 1px, transparent 1px)
-            `,
-            backgroundSize: '64px 64px',
-            WebkitMaskImage: 'radial-gradient(ellipse 85% 60% at 50% 0%, black 20%, transparent 100%)',
-            maskImage: 'radial-gradient(ellipse 85% 60% at 50% 0%, black 20%, transparent 100%)',
+            backgroundImage: darkMode 
+              ? 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)'
+              : 'linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+            WebkitMaskImage: 'radial-gradient(circle 600px at 50% 100px, black 30%, transparent 100%)',
+            maskImage: 'radial-gradient(circle 600px at 50% 100px, black 30%, transparent 100%)',
           }}
         />
-
-        {/* Crosshair accent — blueprint-style tick marks instead of plain dots, static */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Cpath d='M18 12v12M12 18h12' stroke='rgba(120,165,255,0.4)' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E\")",
-            backgroundSize: '36px 36px',
-            WebkitMaskImage: 'radial-gradient(ellipse 70% 50% at 50% 4%, black 25%, transparent 100%)',
-            maskImage: 'radial-gradient(ellipse 70% 50% at 50% 4%, black 25%, transparent 100%)',
-          }}
-        />
-
-        {/* Broadcast source + radar pings — only transform/opacity animate */}
-        <div style={{ position: 'absolute', top: '86px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0 }}>
-          <div style={{ position: 'absolute', top: -5, left: -5, width: 10, height: 10, borderRadius: '50%', background: 'rgba(37,99,235,0.95)', boxShadow: '0 0 16px 4px rgba(37,99,235,0.45)' }} />
-          {[0, 1.3, 2.6].map((delay) => (
-            <div
-              key={delay}
-              className="horizon-anim"
-              style={{
-                position: 'absolute', top: -70, left: -70, width: 140, height: 140,
-                borderRadius: '50%', border: '1px solid rgba(96,150,255,0.55)',
-                animation: `hzPing 3.9s ease-out ${delay}s infinite`,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Channel nodes the broadcast reaches — static position, one shared gentle bob each */}
-        {[
-          { label: 'in', top: 232, left: '20%', color: 'rgba(37,99,235,0.9)', bg: 'rgba(37,99,235,0.10)', border: 'rgba(37,99,235,0.25)', delay: '0s' },
-          { label: '𝕏', top: 268, left: '78%', color: 'rgba(14,150,170,0.95)', bg: 'rgba(34,211,238,0.10)', border: 'rgba(34,211,238,0.25)', delay: '0.6s' },
-        ].map((chip) => (
-          <div
-            key={chip.label}
-            className="horizon-anim"
-            style={{
-              position: 'absolute', top: chip.top, left: chip.left,
-              padding: '6px 10px', borderRadius: '999px',
-              background: chip.bg, border: `1px solid ${chip.border}`,
-              fontSize: '10px', fontFamily: 'monospace', fontWeight: 700, color: chip.color,
-              animation: `hzBob 6s ease-in-out ${chip.delay} infinite`,
-            }}
-          >
-            {chip.label}
-          </div>
-        ))}
       </div>
 
       {/* HEADER */}
