@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /workspace
+Disallow: /workspace/*
+Disallow: /admin
+Disallow: /api/*
+
+Sitemap: https://11oclock-ai.vercel.app/sitemap.xml
