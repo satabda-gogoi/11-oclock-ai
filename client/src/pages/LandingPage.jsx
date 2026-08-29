@@ -14,16 +14,6 @@ export default function LandingPage() {
   const [activeFaq, setActiveFaq] = useState(null);
   const [mockupTab, setMockupTab] = useState("linkedin");
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [darkMode]);
-
   const canvasRef = useRef(null);
 
   useEffect(() => {
