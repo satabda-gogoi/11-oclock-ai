@@ -212,19 +212,19 @@ export default function LandingPage() {
   const faqs = [
     {
       q: "Which platforms does 11 o'clock support?",
-      a: "11 o'clock natively supports LinkedIn and Twitter/X. You can connect your accounts and publish directly from the workspace console."
+      a: "11 o'clock natively supports LinkedIn and Twitter/X. You can connect your channels and cross-post directly from the workspace console."
     },
     {
-      q: "How does the cross-platform optimization work?",
-      a: "When you write a prompt, our AI engine automatically adapts the formatting, length, hashtags, and hooks to match the culture and guidelines of the specific platform you select."
+      q: "How does the AI social media engine cross-post and optimize content?",
+      a: "When you submit a prompt, our AI social media agent automatically adapts the formatting, character length, hashtags, and hooks to match the native guidelines of LinkedIn and Twitter/X."
     },
     {
       q: "Is my credential data secure?",
-      a: "Yes. All integration tokens and profile credentials are encrypted at rest and in transit. We prioritize secure authentication layers using modern industry standards."
+      a: "Yes. All integration tokens and profile credentials are encrypted securely. We prioritize secure authentication layers using modern industry OAuth standards."
     },
     {
-      q: "Can I manage multiple channels simultaneously?",
-      a: "Absolutely. You can switch between active channels (e.g. LinkedIn Hub, Twitter Desk) on the fly and manage independent publishing history for each."
+      q: "Can I automate publishing and schedule posts?",
+      a: "Yes. You can schedule posts and automate content distribution. The workspace scheduling calendar lets you plan dispatches for peak audience hours across connected channels."
     }
   ];
 
@@ -467,11 +467,11 @@ export default function LandingPage() {
             </div>
 
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-foreground">
-              Unified Content Engine for Professional Publishing
+              AI Social Media Agent for Cross-Posting
             </h1>
 
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Write, optimize, and schedule high-performing social copy across your professional channels. Build presence without context switching.
+              Write, optimize, and schedule high-performing content on LinkedIn and Twitter/X simultaneously. Automate your social media presence with our unified AI copilot.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center pt-4 w-full sm:w-auto">
@@ -640,7 +640,7 @@ export default function LandingPage() {
         <section id="features" className="space-y-12">
           <div className="text-center space-y-2">
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary font-bold">Two Modes of Generation</p>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Tailored to your content cadence</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Social Media Automation tailored to your cadence</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -674,7 +674,7 @@ export default function LandingPage() {
         <section id="capabilities" className="space-y-12">
           <div className="text-center space-y-2">
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary font-bold">Platform Capabilities</p>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Everything you need to publish</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">AI Social Media Agent features built for you</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -704,7 +704,7 @@ export default function LandingPage() {
         <section id="workflow" className="space-y-12">
           <div className="text-center space-y-2">
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary font-bold">Operational Workflow</p>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Publish in three simple steps</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Cross-post content in three simple steps</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
@@ -749,7 +749,7 @@ export default function LandingPage() {
         <section id="faq" className="space-y-12 max-w-3xl mx-auto">
           <div className="text-center space-y-2">
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary font-bold">Common Questions</p>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Frequently Asked Questions</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Frequently Asked Questions about our AI Social Media Agent</h2>
           </div>
 
           <div className="space-y-3">
