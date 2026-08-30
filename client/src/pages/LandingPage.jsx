@@ -343,6 +343,7 @@ export default function LandingPage() {
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#capabilities" className="hover:text-foreground transition-colors">Capabilities</a>
             <a href="#workflow" className="hover:text-foreground transition-colors">Workflow</a>
+            <a href="#about" className="hover:text-foreground transition-colors">About</a>
             <a href="#faq" className="hover:text-foreground transition-colors">FAQ</a>
             <Link to="/blog" className="hover:text-foreground transition-colors">Blog</Link>
             <Link to="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
@@ -421,6 +422,7 @@ export default function LandingPage() {
             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Features</a>
             <a href="#capabilities" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Capabilities</a>
             <a href="#workflow" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Workflow</a>
+            <a href="#about" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">About</a>
             <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">FAQ</a>
             <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Blog</Link>
             <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Pricing</Link>
@@ -744,6 +746,35 @@ export default function LandingPage() {
               </p>
             </div>
 
+          </div>
+        </section>
+
+        {/* ABOUT US SECTION */}
+        <section id="about" className="space-y-12 max-w-4xl mx-auto border-t border-custom/60 pt-16">
+          <div className="text-center space-y-2">
+            <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary font-bold">Our Story</p>
+            <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-foreground">About 11 o'clock: The Story Behind the AI Social Media Agent</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            <div className="space-y-4">
+              <h3 className="font-bold text-foreground text-base">Why We Built 11 o'clock</h3>
+              <p>
+                Our journey started with a simple frustration. Most social media automation tools are built like database spreadsheets. They are slow, cluttered, and require you to manually format, write, and adjust copy for every single channel. We realized creators, startup founders, and marketers were spending more time copying and pasting than actually creating.
+              </p>
+              <p>
+                We wanted to build an intelligent assistant. A platform where you just type an idea—like talking to a colleague—and an AI agent does the rest. We named it <strong>11 o'clock</strong> because it is that crucial hour of the day when you finalize your strategies, review your content, and prepare your brand to stand out.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="font-bold text-foreground text-base">The Mission: Simple Social Media Automation</h3>
+              <p>
+                As an <strong>ai social post writer</strong> and <strong>automated content calendar</strong>, 11 o'clock is built to eliminate the boring parts of content creation. We believe the <strong>best content creation software with ai</strong> should be invisible—allowing you to link your LinkedIn and Twitter/X accounts securely, type your prompts, and publish instantly.
+              </p>
+              <p>
+                Our core focus is to deliver a premium, fast, and secure <strong>cross-platform scheduler</strong>. We never save your passwords, and we don't spam your feeds. We are here to help you automate your social media marketing, build your audience, and scale your brand authority cleanly.
+              </p>
+            </div>
           </div>
         </section>
 
