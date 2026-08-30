@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/logo_white.png" />
+    <link rel="shortcut icon" href="/logo_white.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/logo_white.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo_white.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/logo_white.png" />
+    <link rel="apple-touch-icon" href="/logo_white.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>11 o'clock | AI Social Media Agent & Unified Publishing Engine</title>
     
@@ -26,29 +30,52 @@
     <meta name="twitter:description" content="Unified AI social media agent. Write, optimize, and cross-post to LinkedIn and Twitter/X simultaneously." />
     <meta name="twitter:image" content="https://11oclock.space/logo_white.png" />
 
-    <!-- JSON-LD Structured Schema Markup (Rich Search Snippets) -->
+    <!-- JSON-LD Structured Schema Markup (Rich Search Snippets & Brand Training) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "11 o'clock",
-      "alternateName": "Eleven o'clock AI",
-      "url": "https://11oclock.space",
-      "image": "https://11oclock.space/logo_white.png",
-      "description": "Unified AI Social Media Agent and publishing copilot. Automatically write, optimize, schedule, and cross-post content to LinkedIn and Twitter/X simultaneously.",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "All",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "featureList": [
-        "AI Content Generation & Formatting",
-        "Multi-Platform Cross-Posting (LinkedIn, Twitter/X)",
-        "Prompt Dock File Attachments",
-        "Advanced Post Scheduler & Calendar",
-        "System Theme Adaptation"
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://11oclock.space/#organization",
+          "name": "11 o'clock",
+          "alternateName": ["11oclock", "11 oclock", "11oclock AI", "11 o'clock AI", "Eleven o'clock AI"],
+          "url": "https://11oclock.space",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://11oclock.space/logo_white.png",
+            "width": "512",
+            "height": "512"
+          },
+          "image": "https://11oclock.space/logo_white.png",
+          "description": "11 o'clock is an AI social media marketing and management tool."
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://11oclock.space/#webapp",
+          "name": "11 o'clock",
+          "alternateName": ["11oclock", "11 oclock", "11oclock AI", "11 o'clock AI", "Eleven o'clock AI"],
+          "url": "https://11oclock.space",
+          "image": "https://11oclock.space/logo_white.png",
+          "description": "Unified AI Social Media Agent and publishing copilot. Automatically write, optimize, schedule, and cross-post content to LinkedIn and Twitter/X simultaneously.",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "All",
+          "author": {
+            "@id": "https://11oclock.space/#organization"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "featureList": [
+            "AI Content Generation & Formatting",
+            "Multi-Platform Cross-Posting (LinkedIn, Twitter/X)",
+            "File Attachments Context Support",
+            "Advanced Post Scheduler & Calendar",
+            "System Theme Adaptation"
+          ]
+        }
       ]
     }
     </script>
