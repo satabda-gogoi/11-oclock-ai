@@ -469,11 +469,11 @@ export default function LandingPage() {
             </div>
 
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-foreground">
-              AI Social Media Agent for Cross-Posting
+              Best AI Social Media Automation Tool
             </h1>
 
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Write, optimize, and schedule high-performing content on LinkedIn and Twitter/X simultaneously. Automate your social media presence with our unified AI copilot.
+              Stop manually rewriting posts. Meet the AI social media marketing and management tool that automatically writes, schedules, and cross-posts your content to LinkedIn and Twitter/X simultaneously.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center pt-4 w-full sm:w-auto">
@@ -529,7 +529,7 @@ export default function LandingPage() {
           />
           <section className="relative w-full rounded-2xl border border-custom bg-card/30 backdrop-blur-md shadow-2xl p-5 sm:p-7 space-y-6" style={{ zIndex: 1 }}>
             <div className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-mono tracking-widest uppercase font-bold">
-              Interactive Simulator
+              Try the AI Writing Tool
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -537,11 +537,11 @@ export default function LandingPage() {
               {/* Input Prompt Dock simulator */}
               <div className="md:col-span-1 space-y-4 flex flex-col justify-between">
                 <div className="space-y-2">
-                  <div className="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Operational Input</div>
+                  <div className="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Enter Your AI Prompt</div>
                   <div className="p-4 rounded-xl bg-background border border-custom space-y-3">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                      <span className="text-[11px] font-mono text-foreground font-semibold">Prompt Dock</span>
+                      <span className="text-[11px] font-mono text-foreground font-semibold">Write with AI</span>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed italic">
                       "Pivot our B2B SaaS from MVP to Production with multi-channel support."
@@ -551,11 +551,11 @@ export default function LandingPage() {
 
                 {/* Platform selection tabs */}
                 <div className="space-y-2">
-                  <div className="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Select Platform Target</div>
+                  <div className="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Select Social Network</div>
                   <div className="flex flex-col gap-1.5">
                     {[
-                      { id: "linkedin", label: "LinkedIn Workspace" },
-                      { id: "twitter", label: "Twitter / X Feed" }
+                      { id: "linkedin", label: "LinkedIn Preview" },
+                      { id: "twitter", label: "Twitter / X Preview" }
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -652,9 +652,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
                 <Zap className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold">Direct Instant Generation</h3>
+              <h3 className="text-lg font-bold">Instant AI Content Writer</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Provide a brief prompt, rough copy paste, or basic conceptual thought. Eleven instantly transforms it into professional, clean paragraphs optimized for reading time and post formatting.
+                Type a simple idea or paste a rough outline. Our AI social media agent instantly generates high-performing, professionally formatted copy optimized for reading speed and maximum engagement.
               </p>
             </div>
 
@@ -663,9 +663,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
                 <Layers className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold">Workspace Platform Channels</h3>
+              <h3 className="text-lg font-bold">One-Click Cross-Posting</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Connect multiple active channels like LinkedIn or Twitter. Keep your feeds separate, adapt styles dynamically based on the native target feed, and stay organized.
+                Connect LinkedIn and Twitter/X. Write once, and our AI social media marketing tool automatically adapts your content’s tone and character count to match the native guidelines of each network.
               </p>
             </div>
 
@@ -683,20 +683,20 @@ export default function LandingPage() {
             
             <div className="p-5 rounded-xl border border-custom bg-card/20 space-y-3">
               <Globe className="w-5 h-5 text-primary" />
-              <h4 className="font-bold text-sm">Omni-Channel Sync</h4>
-              <p className="text-xs text-muted-foreground">Switch targets instantly. Format tags, media, and copy structures natively per platform guidelines.</p>
+              <h4 className="font-bold text-sm">Cross-Post to Multiple Networks</h4>
+              <p className="text-xs text-muted-foreground">Publish your content to LinkedIn and Twitter/X at the same time. The AI tool handles layout adjustments and link formatting automatically.</p>
             </div>
 
             <div className="p-5 rounded-xl border border-custom bg-card/20 space-y-3">
               <MessageSquare className="w-5 h-5 text-primary" />
-              <h4 className="font-bold text-sm">Interactive Prompt Dock</h4>
-              <p className="text-xs text-muted-foreground">Attach images, copy scripts, or context files. Eleven compiles details to render highly precise posts.</p>
+              <h4 className="font-bold text-sm">Automated Content Scheduler</h4>
+              <p className="text-xs text-muted-foreground">Schedule your posts in advance. The built-in AI scheduler queues your drafts to publish during peak active hours for your audience.</p>
             </div>
 
             <div className="p-5 rounded-xl border border-custom bg-card/20 space-y-3">
               <Shield className="w-5 h-5 text-primary" />
-              <h4 className="font-bold text-sm">Secure Authentication</h4>
-              <p className="text-xs text-muted-foreground">Modern OAuth security layers to keep channel tokens safe. 11 o'clock does not inspect or store personal keys.</p>
+              <h4 className="font-bold text-sm">Safe OAuth Connection</h4>
+              <p className="text-xs text-muted-foreground">Connect your official accounts securely with GoDaddy verified domain redirects and standard OAuth 2.0. We never store your passwords.</p>
             </div>
 
           </div>
@@ -716,9 +716,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-full border-2 border-primary flex items-center justify-center text-xs font-mono font-bold text-primary bg-background">
                 01
               </div>
-              <h4 className="font-bold text-sm">Connect Channel</h4>
+              <h4 className="font-bold text-sm">Link Your Accounts</h4>
               <p className="text-xs text-muted-foreground max-w-xs">
-                Activate your LinkedIn or Twitter channel integrations securely via Clerk settings.
+                Connect your LinkedIn and Twitter/X profiles securely using GoDaddy custom domain redirects.
               </p>
             </div>
 
@@ -727,9 +727,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-full border-2 border-primary flex items-center justify-center text-xs font-mono font-bold text-primary bg-background">
                 02
               </div>
-              <h4 className="font-bold text-sm">Submit Outline</h4>
+              <h4 className="font-bold text-sm">Type Your Prompt</h4>
               <p className="text-xs text-muted-foreground max-w-xs">
-                Provide instructions inside the prompt deck. Compile files or script directions easily.
+                Enter your outline or ideas in the simple text box. You can upload files or notes for extra context.
               </p>
             </div>
 
@@ -738,9 +738,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-full border-2 border-primary flex items-center justify-center text-xs font-mono font-bold text-primary bg-background">
                 03
               </div>
-              <h4 className="font-bold text-sm">Optimize & Publish</h4>
+              <h4 className="font-bold text-sm">Preview & Publish</h4>
               <p className="text-xs text-muted-foreground max-w-xs">
-                Verify reading times, click copy to transfer content, or dispatch direct publish calls natively.
+                Review the live social preview cards to check layout and character counts, then post or schedule instantly.
               </p>
             </div>
 
