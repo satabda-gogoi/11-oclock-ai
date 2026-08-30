@@ -8,6 +8,8 @@ import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import RefundPage from "./pages/RefundPage";
 import ContactPage from "./pages/ContactPage";
+import BlogPage from "./pages/BlogPage";
+import BlogPost1 from "./pages/BlogPost1";
 
 export default function App() {
   return (
@@ -17,6 +19,16 @@ export default function App() {
       <Route 
         path="/" 
         element={<LandingPage />} 
+      />
+
+      <Route 
+        path="/blog" 
+        element={<BlogPage />} 
+      />
+
+      <Route 
+        path="/blog/top-ai-social-media-agents" 
+        element={<BlogPost1 />} 
       />
 
       <Route 

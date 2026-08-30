@@ -344,6 +344,7 @@ export default function LandingPage() {
             <a href="#capabilities" className="hover:text-foreground transition-colors">Capabilities</a>
             <a href="#workflow" className="hover:text-foreground transition-colors">Workflow</a>
             <a href="#faq" className="hover:text-foreground transition-colors">FAQ</a>
+            <Link to="/blog" className="hover:text-foreground transition-colors">Blog</Link>
             <Link to="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
             <Link to="/guide" className="hover:text-foreground transition-colors">Guide</Link>
           </nav>
@@ -416,11 +417,12 @@ export default function LandingPage() {
             </button>
           </div>
 
-          <nav className="flex flex-col gap-4 text-xs font-mono uppercase tracking-wider text-muted-foreground">
+           <nav className="flex flex-col gap-4 text-xs font-mono uppercase tracking-wider text-muted-foreground">
             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Features</a>
             <a href="#capabilities" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Capabilities</a>
             <a href="#workflow" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Workflow</a>
             <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">FAQ</a>
+            <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Blog</Link>
             <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Pricing</Link>
             <Link to="/guide" onClick={() => setMobileMenuOpen(false)} className="hover:text-foreground transition-colors py-1">Guide</Link>
           </nav>
