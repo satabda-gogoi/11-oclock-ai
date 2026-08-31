@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Paperclip, X, Send, Image, FileText, Clock, UploadCloud } from "lucide-react";
+import { Paperclip, X, Send, Image, FileText, Clock, Zap } from "lucide-react";
 import { supabase } from "../../utils/supabaseClient";
 
 export default function PromptDock({ promptInput, setPromptInput, isExecuting, onSubmit, activeApp, isSubscribed = true, onUpgradeClick }) {
@@ -356,10 +356,10 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
               (!promptInput.trim() && attachedFiles.length === 0) || 
               activeApp.iconKey.toLowerCase() !== "linkedin"
             }
-            className={`flex items-center justify-center h-10 px-3 gap-1.5 rounded-xl font-semibold text-xs transition-colors shadow-sm mb-0.5 cursor-pointer ${
+            className={`flex items-center justify-center h-10 w-10 rounded-xl border transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer mb-0.5 ${
               activeApp.iconKey.toLowerCase() === "linkedin"
-                ? "bg-amber-500 hover:bg-amber-400 text-black"
-                : "bg-muted border border-border text-muted-foreground cursor-not-allowed opacity-40"
+                ? "bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500/20"
+                : "bg-background border-border hover:bg-accent/40 text-muted-foreground opacity-40 cursor-not-allowed"
             }`}
             title={
               activeApp.iconKey.toLowerCase() === "linkedin"
@@ -367,8 +367,7 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
                 : "Instant Post is currently supported only for LinkedIn"
             }
           >
-            <UploadCloud className="h-4 w-4" />
-            <span className="hidden sm:inline">Instant Post</span>
+            <Zap className="h-4 w-4" />
           </button>
         )}
 
