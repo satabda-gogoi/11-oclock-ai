@@ -5,6 +5,7 @@ import MasterApp from '../models/MasterApp.js';
 import TempOauthState from '../models/TempOauthState.js';
 import ScheduledPost from '../models/ScheduledPost.js';
 import { encrypt, decrypt } from '../utils/cryptoHelper.js';
+import { classifyUserIntent } from '../utils/intentClassifier.js';
 import crypto from 'crypto';
 
 // @desc    Forward prompt dynamically to the correct platform webhook and save content
@@ -71,14 +72,33 @@ export const dispatchPrompt = async (req, res, next) => {
       return res.status(500).json({ error: "Failed to securely verify platform keys." });
     }
 
-    // 3. Match target key to its unique n8n pipeline environment URL route
-    const workflowWebhookMap = {
-      linkedin: process.env.N8N_LINKEDIN_WEBHOOK_URL,
-      twitter: process.env.N8N_TWITTER_WEBHOOK_URL,
-      instagram: process.env.N8N_INSTAGRAM_WEBHOOK_URL
-    };
+    // 3. Classify User Intent using LangChain
+    let intent = "POST_CREATION";
+    if (scheduling === "instant-upload") {
+      intent = "INSTANT_UPLOAD";
+    } else {
+      intent = await classifyUserIntent(prompt);
+    }
+    console.log(`🤖 LangChain classified user intent: ${intent}`);
 
-    const targetWebhookUrl = workflowWebhookMap[targetPlatform.toLowerCase()];
+    // Match target key and intent to its unique n8n pipeline environment URL
+    let targetWebhookUrl = "";
+    if (targetPlatform.toLowerCase() === 'linkedin') {
+      if (intent === 'INSTANT_UPLOAD') {
+        targetWebhookUrl = process.env.N8N_LINKEDIN_INSTANT_UPLOAD_URL || process.env.N8N_LINKEDIN_WEBHOOK_URL;
+      } else if (intent === 'ANALYTICS') {
+        targetWebhookUrl = process.env.N8N_LINKEDIN_ANALYTICS_URL || process.env.N8N_LINKEDIN_WEBHOOK_URL;
+      } else if (intent === 'CONTENT_REWRITE') {
+        targetWebhookUrl = process.env.N8N_LINKEDIN_REWRITE_URL || process.env.N8N_LINKEDIN_WEBHOOK_URL;
+      } else {
+        targetWebhookUrl = process.env.N8N_LINKEDIN_WEBHOOK_URL;
+      }
+    } else if (targetPlatform.toLowerCase() === 'twitter') {
+      targetWebhookUrl = process.env.N8N_TWITTER_WEBHOOK_URL;
+    } else if (targetPlatform.toLowerCase() === 'instagram') {
+      targetWebhookUrl = process.env.N8N_INSTAGRAM_WEBHOOK_URL;
+    }
+
     if (!targetWebhookUrl) {
       return res.status(500).json({ error: `Routing error: No workflow webhook configured for ${targetPlatform}.` });
     }
@@ -88,17 +108,17 @@ export const dispatchPrompt = async (req, res, next) => {
     // 💡 4. INITIALIZE THE HISTORY DOCUMENT WITH ATTACHMENTS
     const historyRecord = new PromptHistory({
       userId,
-      title: prompt, 
+      title: prompt || (attachments && attachments.length > 0 ? `Uploaded Image (${attachments[0].fileName})` : "Direct Media Dispatch"), 
       inputPrompt: prompt,
       generatedContent: "",
-      status: 'processing',
+      status: intent === "INSTANT_UPLOAD" ? "published" : "processing",
       platform: targetPlatform.toLowerCase(),
       attachments: attachments || [] // 👈 Commits file metadata strings directly into your database row
     });
 
     await historyRecord.save();
 
-    console.log(`🚀 Triggering n8n background execution flow pipeline asynchronously...`);
+    console.log(`🚀 Triggering n8n background execution flow pipeline (${intent}) asynchronously...`);
 
     // 💡 5. FIRE ASYNC PAYLOAD DOWN THE PIPELINE WITH MEDIA ATTRIBUTES
     fetch(targetWebhookUrl, {
@@ -107,6 +127,7 @@ export const dispatchPrompt = async (req, res, next) => {
       body: JSON.stringify({ 
         prompt, 
         userId, 
+        intent,
         strategy: scheduling || "instant",
         recordId: historyRecord._id, 
         attachments: attachments || [], // 👈 n8n can now directly read fileUrl strings instantly!

@@ -502,7 +502,9 @@ export default function DashboardPage() {
     const userPromptPayload = promptInput;
     setPromptInput(""); 
 
-    if (schedulingConfig) {
+    const isInstantUpload = schedulingConfig && schedulingConfig.scheduleType === "instant-upload";
+
+    if (schedulingConfig && !isInstantUpload) {
       setStatusMessage({ type: "info", text: "Scheduling your post..." });
       try {
         const token = await getToken();
@@ -544,8 +546,12 @@ export default function DashboardPage() {
     }
 
     setIsExecuting(true);
-    setStatusMessage({ type: "info", text: "Compiling assets, compiling scripts, and updating channels..." });
-    setActiveChat({ prompt: userPromptPayload || "Attached file payload analysis dispatch.", response: null });
+    if (isInstantUpload) {
+      setStatusMessage({ type: "info", text: "Posting instantly to LinkedIn..." });
+    } else {
+      setStatusMessage({ type: "info", text: "Compiling assets, compiling scripts, and updating channels..." });
+      setActiveChat({ prompt: userPromptPayload || "Attached file payload analysis dispatch.", response: null });
+    }
 
     try {
       const token = await getToken();
@@ -559,7 +565,7 @@ export default function DashboardPage() {
         },
         body: JSON.stringify({
           prompt: userPromptPayload,
-          scheduling: "instant",
+          scheduling: isInstantUpload ? "instant-upload" : "instant",
           targetPlatform: activeApp.iconKey,
           attachments: attachments
         })
@@ -577,9 +583,16 @@ export default function DashboardPage() {
       const outcomeJson = await response.json();
 
       if (response.status === 202 && outcomeJson.recordId) {
-        console.log(`📡 Job accepted with Reference Token: ${outcomeJson.recordId}. Initializing poll cycle via navigate...`);
-        navigate(`/workspace/chat/${outcomeJson.recordId}`);
-        fetchWorkspaceHistory();
+        if (isInstantUpload) {
+          setIsExecuting(false);
+          setStatusMessage({ type: "info", text: "Successfully posted instantly to LinkedIn!" });
+          setTimeout(() => setStatusMessage({ type: null, text: "" }), 5000);
+          fetchWorkspaceHistory();
+        } else {
+          console.log(`📡 Job accepted with Reference Token: ${outcomeJson.recordId}. Initializing poll cycle via navigate...`);
+          navigate(`/workspace/chat/${outcomeJson.recordId}`);
+          fetchWorkspaceHistory();
+        }
       }
 
     } catch (error) {

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Paperclip, X, Send, Image, FileText, Clock } from "lucide-react";
+import { Paperclip, X, Send, Image, FileText, Clock, UploadCloud } from "lucide-react";
 import { supabase } from "../../utils/supabaseClient";
 
 export default function PromptDock({ promptInput, setPromptInput, isExecuting, onSubmit, activeApp, isSubscribed = true, onUpgradeClick }) {
@@ -116,6 +116,30 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
     // 💡 INTERCEPT ENGINE: Inject our structural attachments payload block and scheduling configuration
     onSubmit(e, attachedFiles, schedulingConfig);
     setAttachedFiles([]); // Clear attachment stage state block
+    setIsScheduled(false);
+    setScheduledTime("");
+    setDailyTime("");
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+  };
+
+  const handleInstantUploadClick = (e) => {
+    e.preventDefault();
+    if (!promptInput.trim() && attachedFiles.length === 0) return;
+
+    if (!isSubscribed) {
+      onUpgradeClick?.();
+      return;
+    }
+
+    const schedulingConfig = {
+      scheduleType: "instant-upload"
+    };
+
+    onSubmit(e, attachedFiles, schedulingConfig);
+    setAttachedFiles([]);
     setIsScheduled(false);
     setScheduledTime("");
     setDailyTime("");
@@ -322,10 +346,36 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
           />
         </div>
 
+        {activeApp && (
+          <button
+            type="button"
+            onClick={handleInstantUploadClick}
+            disabled={
+              isExecuting || 
+              isUploading || 
+              (!promptInput.trim() && attachedFiles.length === 0) || 
+              activeApp.iconKey.toLowerCase() !== "linkedin"
+            }
+            className={`flex items-center justify-center h-10 px-3 gap-1.5 rounded-xl font-semibold text-xs transition-colors shadow-sm mb-0.5 cursor-pointer ${
+              activeApp.iconKey.toLowerCase() === "linkedin"
+                ? "bg-amber-500 hover:bg-amber-400 text-black"
+                : "bg-muted border border-border text-muted-foreground cursor-not-allowed opacity-40"
+            }`}
+            title={
+              activeApp.iconKey.toLowerCase() === "linkedin"
+                ? "Instant Post to LinkedIn"
+                : "Instant Post is currently supported only for LinkedIn"
+            }
+          >
+            <UploadCloud className="h-4 w-4" />
+            <span className="hidden sm:inline">Instant Post</span>
+          </button>
+        )}
+
         <button
           type="submit"
           disabled={isExecuting || isUploading || (!promptInput.trim() && attachedFiles.length === 0)}
-          className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-40 mb-0.5"
+          className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-40 mb-0.5 cursor-pointer"
         >
           <Send className="h-4 w-4" />
         </button>
