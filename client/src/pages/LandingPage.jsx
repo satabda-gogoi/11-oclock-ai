@@ -212,19 +212,19 @@ export default function LandingPage() {
   const faqs = [
     {
       q: "Which platforms does 11 o'clock support?",
-      a: "11 o'clock natively supports LinkedIn and Twitter/X. You can connect your channels and cross-post directly from the workspace console."
+      a: "11 o'clock supports LinkedIn and Twitter(X). You can link your profiles and post to both platforms at the same time to gain followers and grow your audience."
     },
     {
       q: "How does the AI social media engine cross-post and optimize content?",
-      a: "When you submit a prompt, our AI social media agent automatically adapts the formatting, character length, hashtags, and hooks to match the native guidelines of LinkedIn and Twitter/X."
+      a: "When you submit a simple prompt, our AI social media agent automatically adapts the post formatting, text length, and hashtags to match the community guidelines of LinkedIn and Twitter(X) so you get more likes, comments, and shares."
     },
     {
-      q: "Is my credential data secure?",
-      a: "Yes. All integration tokens and profile credentials are encrypted securely. We prioritize secure authentication layers using modern industry OAuth standards."
+      q: "Is my connection safe?",
+      a: "Yes. We use safe, official social logins to connect your profiles. We never see, access, or store your passwords."
     },
     {
-      q: "Can I automate publishing and schedule posts?",
-      a: "Yes. You can schedule posts and automate content distribution. The workspace scheduling calendar lets you plan dispatches for peak audience hours across connected channels."
+      q: "Can I schedule posts in advance?",
+      a: "Yes. You can schedule posts and automate your publishing. The simple content calendar lets you plan posts for the best times when your followers are online."
     }
   ];
 
@@ -471,11 +471,11 @@ export default function LandingPage() {
             </div>
 
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-foreground">
-              Best AI Social Media Automation Tool
+              AI Social Media Automation for LinkedIn & Twitter(X)
             </h1>
 
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Stop manually rewriting posts. Meet the AI social media marketing and management tool that automatically writes, schedules, and cross-posts your content to LinkedIn and Twitter/X simultaneously.
+              Stop manually writing posts. Meet the AI social media content creation tool that automatically writes, schedules, and posts your content to get more followers, likes, comments, and shares.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center pt-4 w-full sm:w-auto">
@@ -600,7 +600,7 @@ export default function LandingPage() {
                   {mockupTab === "twitter" && (
                     <div className="space-y-3 text-xs leading-relaxed text-foreground/90 font-sans select-text">
                       <p className="border-l-2 border-primary/30 pl-3">1/ We're officially out of beta! Eleven is graduating from MVP to a full production-ready workspace. 🚀<br/><br/>Here is what is new in v1.2:</p>
-                      <p className="border-l-2 border-primary/30 pl-3">2/ Multi-Platform support is live. Link your LinkedIn and Twitter/X channels to compile and distribute content from a single secure dock.</p>
+                      <p className="border-l-2 border-primary/30 pl-3">2/ Multi-Platform support is live. Link your LinkedIn and Twitter(X) profiles to post and schedule content from a single screen.</p>
                       <p className="border-l-2 border-primary/30 pl-3">3/ Our optimized generation engines tailor tags, hooks, and spacing natively for each feed. Try it out free today!</p>
                     </div>
                   )}
@@ -665,9 +665,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
                 <Layers className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold">One-Click Cross-Posting</h3>
+              <h3 className="text-lg font-bold">One-Click Posting</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Connect LinkedIn and Twitter/X. Write once, and our AI social media marketing tool automatically adapts your content’s tone and character count to match the native guidelines of each network.
+                Link LinkedIn and Twitter(X). Write once, and our AI social media tool automatically formats and schedules your posts to get more likes, comments, and shares.
               </p>
             </div>
 
@@ -678,27 +678,27 @@ export default function LandingPage() {
         <section id="capabilities" className="space-y-12">
           <div className="text-center space-y-2">
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary font-bold">Platform Capabilities</p>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">AI Social Media Agent features built for you</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">LinkedIn AI Content Creation & Twitter(X) Automation</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             
             <div className="p-5 rounded-xl border border-custom bg-card/20 space-y-3">
               <Globe className="w-5 h-5 text-primary" />
-              <h4 className="font-bold text-sm">Cross-Post to Multiple Networks</h4>
-              <p className="text-xs text-muted-foreground">Publish your content to LinkedIn and Twitter/X at the same time. The AI tool handles layout adjustments and link formatting automatically.</p>
+              <h4 className="font-bold text-sm">Post to LinkedIn & Twitter(X)</h4>
+              <p className="text-xs text-muted-foreground">Post to LinkedIn and Twitter(X) at the same time. Get more followers and promote your content easily without manual copy-pasting.</p>
             </div>
 
             <div className="p-5 rounded-xl border border-custom bg-card/20 space-y-3">
               <MessageSquare className="w-5 h-5 text-primary" />
-              <h4 className="font-bold text-sm">Automated Content Scheduler</h4>
-              <p className="text-xs text-muted-foreground">Schedule your posts in advance. The built-in AI scheduler queues your drafts to publish during peak active hours for your audience.</p>
+              <h4 className="font-bold text-sm">AI Content Scheduler</h4>
+              <p className="text-xs text-muted-foreground">Schedule your posts in advance. The simple content calendar automatically publishes your drafts when your followers are most active online.</p>
             </div>
 
             <div className="p-5 rounded-xl border border-custom bg-card/20 space-y-3">
               <Shield className="w-5 h-5 text-primary" />
-              <h4 className="font-bold text-sm">Safe OAuth Connection</h4>
-              <p className="text-xs text-muted-foreground">Connect your official accounts securely with GoDaddy verified domain redirects and standard OAuth 2.0. We never store your passwords.</p>
+              <h4 className="font-bold text-sm">Safe & Secure Social Login</h4>
+              <p className="text-xs text-muted-foreground">Connect your profiles safely using official connection links. We never see, access, or store your personal passwords.</p>
             </div>
 
           </div>
@@ -708,7 +708,7 @@ export default function LandingPage() {
         <section id="workflow" className="space-y-12">
           <div className="text-center space-y-2">
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary font-bold">Operational Workflow</p>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Cross-post content in three simple steps</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Schedule and post in three simple steps</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
@@ -718,9 +718,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-full border-2 border-primary flex items-center justify-center text-xs font-mono font-bold text-primary bg-background">
                 01
               </div>
-              <h4 className="font-bold text-sm">Link Your Accounts</h4>
+              <h4 className="font-bold text-sm">Link Profiles</h4>
               <p className="text-xs text-muted-foreground max-w-xs">
-                Connect your LinkedIn and Twitter/X profiles securely using GoDaddy custom domain redirects.
+                Connect your LinkedIn and Twitter(X) profiles safely in one click.
               </p>
             </div>
 
@@ -740,9 +740,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-full border-2 border-primary flex items-center justify-center text-xs font-mono font-bold text-primary bg-background">
                 03
               </div>
-              <h4 className="font-bold text-sm">Preview & Publish</h4>
+              <h4 className="font-bold text-sm">Schedule or Post</h4>
               <p className="text-xs text-muted-foreground max-w-xs">
-                Review the live social preview cards to check layout and character counts, then post or schedule instantly.
+                Review the live social preview cards to check layout and character counts, then post or schedule instantly to gain followers.
               </p>
             </div>
 
@@ -769,10 +769,10 @@ export default function LandingPage() {
             <div className="space-y-4">
               <h3 className="font-bold text-foreground text-base">The Mission: Simple Social Media Automation</h3>
               <p>
-                As an <strong>ai social post writer</strong> and <strong>automated content calendar</strong>, 11 o'clock is built to eliminate the boring parts of content creation. We believe the <strong>best content creation software with ai</strong> should be invisible—allowing you to link your LinkedIn and Twitter/X accounts securely, type your prompts, and publish instantly.
+                As an <strong>ai social post writer</strong> and <strong>automated content calendar</strong>, 11 o'clock is built to eliminate the boring parts of content creation. We believe the <strong>best content creation software with ai</strong> should be invisible—allowing you to link your LinkedIn and Twitter(X) profiles safely, type your prompts, and publish instantly.
               </p>
               <p>
-                Our core focus is to deliver a premium, fast, and secure <strong>cross-platform scheduler</strong>. We never save your passwords, and we don't spam your feeds. We are here to help you automate your social media marketing, build your audience, and scale your brand authority cleanly.
+                Our core focus is to deliver a premium, fast, and secure <strong>cross-platform scheduler to schedule posts and grow your account</strong>. We never save your passwords, and we don't spam your feeds. We are here to help you automate your social media marketing, promote your profiles to get more likes, comments, and shares cleanly.
               </p>
             </div>
           </div>
