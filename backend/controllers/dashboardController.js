@@ -106,12 +106,15 @@ export const dispatchPrompt = async (req, res, next) => {
     console.log(`💾 Initializing Async Tracking Record in MongoDB (Status: processing)...`);
 
     // 💡 4. INITIALIZE THE HISTORY DOCUMENT WITH ATTACHMENTS
+    const defaultTitle = prompt || (attachments && attachments.length > 0 ? `Uploaded Image (${attachments[0].fileName})` : "Direct Media Dispatch");
+    const defaultInputPrompt = prompt || (attachments && attachments.length > 0 ? `Direct Media Dispatch: ${attachments[0].fileName}` : "Direct Upload");
+
     const historyRecord = new PromptHistory({
       userId,
-      title: prompt || (attachments && attachments.length > 0 ? `Uploaded Image (${attachments[0].fileName})` : "Direct Media Dispatch"), 
-      inputPrompt: prompt,
+      title: defaultTitle, 
+      inputPrompt: defaultInputPrompt,
       generatedContent: "",
-      status: intent === "INSTANT_UPLOAD" ? "published" : "processing",
+      status: "processing",
       platform: targetPlatform.toLowerCase(),
       attachments: attachments || [] // 👈 Commits file metadata strings directly into your database row
     });
