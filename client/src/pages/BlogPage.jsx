@@ -8,6 +8,15 @@ export default function BlogPage() {
 
   const blogPosts = [
     {
+      slug: "best-ai-social-media-tools-comparison",
+      title: "Best AI Social Media Tools: Gumloop vs. Predis.ai vs. Feedhive vs. 11 o'clock",
+      description: "Looking for a Gumloop alternative, Predis.ai alternative, or Feedhive alternative? We compare the best AI social media content creation and automation tools of 2026.",
+      date: "August 31, 2026",
+      readTime: "5 min read",
+      tags: ["Gumloop Alternative", "Predis.ai Alternative", "Feedhive Alternative", "Ocoya Alternative"],
+      category: "Comparisons"
+    },
+    {
       slug: "top-ai-social-media-agents",
       title: "Top 5 AI Social Media Agents & Automation Tools in 2026",
       description: "Traditional social media managers are slow and complex. Compare the best AI social media agents (Buffer, Hootsuite, Lately, Taplio, and 11 o'clock) to choose the right copilot for your workflow.",

@@ -10,6 +10,7 @@ import RefundPage from "./pages/RefundPage";
 import ContactPage from "./pages/ContactPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPost1 from "./pages/BlogPost1";
+import BlogPost2 from "./pages/BlogPost2";
 
 export default function App() {
   return (
@@ -29,6 +30,11 @@ export default function App() {
       <Route 
         path="/blog/top-ai-social-media-agents" 
         element={<BlogPost1 />} 
+      />
+
+      <Route 
+        path="/blog/best-ai-social-media-tools-comparison" 
+        element={<BlogPost2 />} 
       />
 
       <Route 
