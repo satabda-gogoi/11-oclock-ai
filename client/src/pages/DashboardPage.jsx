@@ -261,7 +261,6 @@ export default function DashboardPage() {
   const fetchMasterApps = async () => {
     try {
       const token = await getToken();
-      console.log("🎫 Current Clerk Token Generated:", token);
 
       if (!token) {
         console.warn("⚠️ Warning: Clerk returned an empty token string. Request will fail.");

@@ -150,11 +150,11 @@ export default function LandingPage() {
 
     // 7. Animation Loop
     let animationFrameId;
-    let clock = new THREE.Clock();
+    const startTime = performance.now();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+      const elapsedTime = (performance.now() - startTime) / 1000;
 
       // Dynamic rotations
       starField.rotation.y = elapsedTime * 0.02 + scrollRatio * 0.5;
