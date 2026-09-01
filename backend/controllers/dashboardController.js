@@ -261,9 +261,16 @@ export const handleWebhookComplete = async (req, res, next) => {
       historyRecord.generatedContent = finalOutput;
     }
     
-    const finalPostUrl = postUrl || publishedUrl || url || link;
-    if (finalPostUrl) {
-      historyRecord.postUrl = finalPostUrl;
+    const rawPostUrl = postUrl || publishedUrl || url || link;
+    if (rawPostUrl && typeof rawPostUrl === 'string') {
+      let cleaned = rawPostUrl.replace(/^["'\\\s]+|["'\\\s]+$/g, '').trim();
+      cleaned = cleaned.replace(/^https?:\/([^\/])/, 'https://$1');
+      if (cleaned.startsWith("urn:li:")) {
+        cleaned = `https://www.linkedin.com/feed/update/${cleaned}`;
+      } else if (!/^https?:\/\//i.test(cleaned)) {
+        cleaned = `https://${cleaned}`;
+      }
+      historyRecord.postUrl = cleaned;
     }
 
     if (topic) historyRecord.title = topic;

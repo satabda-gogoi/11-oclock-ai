@@ -63,6 +63,20 @@ const PLAN_FEATURES = {
   ],
 };
 
+function getCleanPostUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  // Remove wrapping quotes (both single and double), backslashes, and surrounding whitespace
+  let cleaned = url.replace(/^["'\\\s]+|["'\\\s]+$/g, '').trim();
+  // Fix single slash malformed protocol (e.g. https:/www.linkedin...)
+  cleaned = cleaned.replace(/^https?:\/([^\/])/, 'https://$1');
+  if (cleaned.startsWith("urn:li:")) {
+    cleaned = `https://www.linkedin.com/feed/update/${cleaned}`;
+  } else if (!/^https?:\/\//i.test(cleaned)) {
+    cleaned = `https://${cleaned}`;
+  }
+  return cleaned;
+}
+
 export default function ChatCanvas({ 
   activeChat, 
   isExecuting, 
@@ -320,18 +334,21 @@ export default function ChatCanvas({
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          {activeChat.postUrl && (
-                            <a
-                              href={activeChat.postUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-lg border border-primary/30 text-primary bg-primary/10 hover:bg-primary/20 transition-all select-none cursor-pointer"
-                              title="Open live post in new tab"
-                            >
-                              <ExternalLink className="w-3 h-3" />
-                              <span>View on {platformLabel}</span>
-                            </a>
-                          )}
+                          {(() => {
+                            const cleanPostUrl = getCleanPostUrl(activeChat.postUrl);
+                            return cleanPostUrl ? (
+                              <a
+                                href={cleanPostUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-lg border border-primary/30 text-primary bg-primary/10 hover:bg-primary/20 transition-all select-none cursor-pointer"
+                                title="Open live post in new tab"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                <span>View on {platformLabel}</span>
+                              </a>
+                            ) : null;
+                          })()}
                           <CopyButton text={activeChat.response} />
                         </div>
                       </div>
