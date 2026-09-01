@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, AlertTriangle, Globe, Plus, CheckCircle2, Copy, Check, Zap, Lock, Loader2 } from "lucide-react";
+import { Sparkles, AlertTriangle, Globe, Plus, CheckCircle2, Copy, Check, Zap, Lock, Loader2, ExternalLink } from "lucide-react";
 
 const LinkedinIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -305,8 +305,8 @@ export default function ChatCanvas({
                     <div className="p-5 text-sm leading-relaxed whitespace-pre-wrap text-foreground/90 select-text">
                       {activeChat.response}
                     </div>
-                    {isCompleted && (
-                      <div className="flex items-center justify-between px-5 py-2.5 border-t border-custom/60 bg-card/20">
+                    {(isCompleted || activeChat.postUrl) && (
+                      <div className="flex items-center justify-between px-5 py-2.5 border-t border-custom/60 bg-card/20 flex-wrap gap-2">
                         <div className="flex items-center gap-1.5">
                           <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
                           <span className="text-[11px] font-mono text-green-400">Published</span>
@@ -319,7 +319,21 @@ export default function ChatCanvas({
                             </>
                           )}
                         </div>
-                        <CopyButton text={activeChat.response} />
+                        <div className="flex items-center gap-2">
+                          {activeChat.postUrl && (
+                            <a
+                              href={activeChat.postUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-lg border border-primary/30 text-primary bg-primary/10 hover:bg-primary/20 transition-all select-none cursor-pointer"
+                              title="Open live post in new tab"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              <span>View on {platformLabel}</span>
+                            </a>
+                          )}
+                          <CopyButton text={activeChat.response} />
+                        </div>
                       </div>
                     )}
                   </div>

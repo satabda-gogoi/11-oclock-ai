@@ -12,6 +12,7 @@ const PromptHistorySchema = new mongoose.Schema({
     default: 'processing' 
   },
   platform: { type: String },
+  postUrl: { type: String, default: "" },
   
   // 💡 NEW MULTIMODAL ATTACHMENT SCHEMA VECTOR
   attachments: [

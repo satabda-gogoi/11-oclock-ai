@@ -114,14 +114,16 @@ export default function DashboardPage() {
             setActiveChat({
               prompt: data.chat.inputPrompt,
               response: data.chat.generatedContent,
-              status: data.chat.status
+              status: data.chat.status,
+              postUrl: data.chat.postUrl || null
             });
             fetchWorkspaceHistory();
           } else {
             setActiveChat({
               prompt: data.chat.inputPrompt,
               response: data.chat.generatedContent || null,
-              status: 'processing'
+              status: 'processing',
+              postUrl: data.chat.postUrl || null
             });
           }
         }
@@ -158,7 +160,8 @@ export default function DashboardPage() {
             setActiveChat({
               prompt: data.chat.inputPrompt,
               response: data.chat.generatedContent || null,
-              status: data.chat.status
+              status: data.chat.status,
+              postUrl: data.chat.postUrl || null
             });
             // Automatically detect the app platform for this chat, falling back to 'linkedin' for legacy chats
             const platformKey = data.chat.platform || "linkedin";

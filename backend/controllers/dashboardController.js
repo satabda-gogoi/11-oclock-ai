@@ -237,7 +237,7 @@ export const handleWebhookComplete = async (req, res, next) => {
     }
 
     // 💡 Catch the tracking parameters and output payload sent from n8n
-    const { recordId, output, topic, status } = req.body;
+    const { recordId, output, topic, status, postUrl, publishedUrl, url, link } = req.body;
 
     console.log(`🛰️ Callback received from n8n for Record ID: ${recordId}`);
     console.log("Incoming webhook payload body:", JSON.stringify(req.body, null, 2));
@@ -261,6 +261,11 @@ export const handleWebhookComplete = async (req, res, next) => {
       historyRecord.generatedContent = finalOutput;
     }
     
+    const finalPostUrl = postUrl || publishedUrl || url || link;
+    if (finalPostUrl) {
+      historyRecord.postUrl = finalPostUrl;
+    }
+
     if (topic) historyRecord.title = topic;
 
     await historyRecord.save();
