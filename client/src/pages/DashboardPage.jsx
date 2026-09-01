@@ -489,18 +489,7 @@ export default function DashboardPage() {
 
   const executePipelineDispatch = async (e, attachments = [], schedulingConfig = null) => { 
     e.preventDefault();
-    if ((!promptInput.trim() && attachments.length === 0) || !activeApp || isExecuting) return;
-
-    if (activeApp.iconKey.toLowerCase() === "twitter") {
-      setStatusMessage({ 
-        type: "error", 
-        text: "Twitter / X integration is temporarily unavailable. We are upgrading services." 
-      });
-      setTimeout(() => {
-        setStatusMessage({ type: null, text: "" });
-      }, 5000);
-      return;
-    }
+    if ((!promptInput.trim() && attachments.length === 0) || isExecuting) return;
 
     const userPromptPayload = promptInput;
     setPromptInput(""); 
@@ -521,7 +510,7 @@ export default function DashboardPage() {
           },
           body: JSON.stringify({
             prompt: userPromptPayload,
-            platform: activeApp.iconKey,
+            platform: activeApp ? activeApp.iconKey : "linkedin",
             scheduleType: schedulingConfig.scheduleType,
             scheduledTime: schedulingConfig.scheduledTime,
             dailyTime: schedulingConfig.dailyTime,
@@ -569,7 +558,7 @@ export default function DashboardPage() {
         body: JSON.stringify({
           prompt: userPromptPayload,
           scheduling: isInstantUpload ? "instant-upload" : "instant",
-          targetPlatform: activeApp.iconKey,
+          targetPlatform: activeApp ? activeApp.iconKey : null,
           attachments: attachments
         })
       });
@@ -582,10 +571,44 @@ export default function DashboardPage() {
         return;
       }
 
-      if (!response.ok) throw new Error(`Server Fault: ${response.status}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server Fault: ${response.status}`);
+      }
+
       const outcomeJson = await response.json();
 
+      // Direct Gemini Completion (General Generation, Twitter Draft, or Unconnected Platform)
+      if (response.status === 200 && outcomeJson.status === "completed") {
+        setIsExecuting(false);
+        setStatusMessage({ type: null, text: "" });
+        
+        if (outcomeJson.platform && masterApps.length > 0) {
+          const app = masterApps.find(a => a.iconKey.toLowerCase() === outcomeJson.platform.toLowerCase());
+          if (app) setActiveApp(app);
+        }
+
+        setActiveChat({
+          prompt: userPromptPayload || "Attached file payload analysis dispatch.",
+          response: outcomeJson.generatedContent,
+          status: "completed",
+          postUrl: outcomeJson.postUrl || null
+        });
+
+        if (outcomeJson.recordId) {
+          navigate(`/workspace/chat/${outcomeJson.recordId}`);
+        }
+        fetchWorkspaceHistory();
+        return;
+      }
+
+      // Asynchronous Background Workflow
       if (response.status === 202 && outcomeJson.recordId) {
+        if (outcomeJson.platform && masterApps.length > 0) {
+          const app = masterApps.find(a => a.iconKey.toLowerCase() === outcomeJson.platform.toLowerCase());
+          if (app) setActiveApp(app);
+        }
+
         if (isInstantUpload) {
           setIsExecuting(false);
           setStatusMessage({ type: "info", text: "Successfully posted instantly to LinkedIn!" });
@@ -600,7 +623,7 @@ export default function DashboardPage() {
 
     } catch (error) {
       console.error("Transmission execution failure error:", error);
-      setStatusMessage({ type: "error", text: "Something went wrong processing your dispatch. Please try again." });
+      setStatusMessage({ type: "error", text: error.message || "Something went wrong processing your dispatch. Please try again." });
       setIsExecuting(false);
     }
   };

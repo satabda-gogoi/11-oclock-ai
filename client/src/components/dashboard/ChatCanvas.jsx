@@ -128,9 +128,9 @@ export default function ChatCanvas({
           </>
         ) : (
           <>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 animate-pulse" />
+            <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
             <span className="text-[11px] font-mono tracking-widest uppercase text-muted-foreground">
-              Select a channel to begin
+              Universal Workspace · Auto-Routing Ready
             </span>
           </>
         )}
@@ -227,9 +227,9 @@ export default function ChatCanvas({
         {isSubscribed && !activeApp && (
           <div className="h-full flex flex-col items-center justify-center px-6 py-12 space-y-6 max-w-xl mx-auto">
             <div className="text-center space-y-2">
-              <h2 className="text-lg font-semibold text-foreground tracking-tight">Select a platform</h2>
-              <p className="text-xs text-muted-foreground">
-                Choose a channel to start a new generation session.
+              <h2 className="text-lg font-semibold text-foreground tracking-tight">Select a platform or prompt directly</h2>
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                Pick a channel or simply start typing in the dock below. Our AI router will automatically understand and execute your request.
               </p>
             </div>
             

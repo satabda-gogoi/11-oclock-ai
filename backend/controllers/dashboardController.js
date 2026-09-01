@@ -5,7 +5,7 @@ import MasterApp from '../models/MasterApp.js';
 import TempOauthState from '../models/TempOauthState.js';
 import ScheduledPost from '../models/ScheduledPost.js';
 import { encrypt, decrypt } from '../utils/cryptoHelper.js';
-import { classifyUserIntent } from '../utils/intentClassifier.js';
+import { analyzeAndRoutePrompt, generateDirectContent } from '../utils/intentClassifier.js';
 import crypto from 'crypto';
 
 // @desc    Forward prompt dynamically to the correct platform webhook and save content
@@ -25,34 +25,141 @@ export const dispatchPrompt = async (req, res, next) => {
     const { prompt, scheduling, targetPlatform, attachments } = req.body;
 
     console.log(`🔐 Authenticated Request from User: ${userId}`);
-    console.log(`🎯 Context Platform Target Flag: ${targetPlatform}`);
+    console.log(`🎯 Client Specified Target Platform: ${targetPlatform || "auto-detect"}`);
     if (attachments && attachments.length > 0) {
       console.log(`📎 Media Attachments Detected: ${attachments.length} file(s) attached.`);
     }
 
-    if (!targetPlatform) {
-      return res.status(400).json({ error: "No destination platform context provided." });
-    }
+    const isInstantAction = scheduling === "instant-upload";
 
-    // 1. Resolve MasterApp
-    const masterApp = await MasterApp.findOne({ iconKey: targetPlatform.toLowerCase(), isActive: true });
-    if (!masterApp) {
-      return res.status(404).json({ error: `Platform '${targetPlatform}' is currently unavailable.` });
-    }
-
-    // 2. Fetch user integration credentials
-    const userIntegration = await Integration.findOne({
-      userId,
-      appId: masterApp._id,
-      authStatus: 'authorized'
+    // 1. Analyze user prompt, detect platform, and classify intent via LangChain
+    const routeAnalysis = await analyzeAndRoutePrompt({
+      promptText: prompt,
+      explicitPlatform: targetPlatform && targetPlatform !== "auto" ? targetPlatform : null,
+      isInstantAction
     });
 
-    if (!userIntegration) {
-      return res.status(401).json({ 
-        error: `Account not linked. Please connect your ${masterApp.name} channel in the sidebar first.` 
+    const resolvedPlatform = routeAnalysis.platform; // 'linkedin' | 'twitter' | 'instagram' | 'general'
+    const intent = routeAnalysis.intent;             // 'POST_CREATION' | 'INSTANT_UPLOAD' | 'SCHEDULE' | 'GENERAL_CHAT' | ...
+    console.log(`🤖 LangChain Route Analysis -> Platform: ${resolvedPlatform}, Intent: ${intent}`);
+
+    const defaultTitle = prompt || (attachments && attachments.length > 0 ? `Uploaded Image (${attachments[0].fileName})` : "Direct Media Dispatch");
+    const defaultInputPrompt = prompt || (attachments && attachments.length > 0 ? `Direct Media Dispatch: ${attachments[0].fileName}` : "Direct Upload");
+
+    // 2. CASE A: General Chat / Writing (no specific platform requested or generic request)
+    if (resolvedPlatform === "general" || intent === "GENERAL_CHAT") {
+      console.log(`⚡ Generating general social content directly via Gemini...`);
+      const generatedContent = await generateDirectContent({
+        promptText: prompt || defaultInputPrompt,
+        platform: "general"
+      });
+
+      const historyRecord = new PromptHistory({
+        userId,
+        title: defaultTitle,
+        inputPrompt: defaultInputPrompt,
+        generatedContent,
+        status: "completed",
+        platform: "general",
+        attachments: attachments || []
+      });
+      await historyRecord.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Content generated successfully.",
+        recordId: historyRecord._id,
+        status: "completed",
+        generatedContent,
+        platform: "general",
+        title: defaultTitle
       });
     }
 
+    // 3. CASE B: Twitter(X) Generation (Graceful Handling while integration is in development)
+    if (resolvedPlatform === "twitter") {
+      console.log(`⚡ Generating Twitter(X) content directly via Gemini with pause notice...`);
+      const generatedContent = await generateDirectContent({
+        promptText: prompt || defaultInputPrompt,
+        platform: "twitter",
+        isTwitterPaused: true
+      });
+
+      const historyRecord = new PromptHistory({
+        userId,
+        title: defaultTitle,
+        inputPrompt: defaultInputPrompt,
+        generatedContent,
+        status: "completed",
+        platform: "twitter",
+        attachments: attachments || []
+      });
+      await historyRecord.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Twitter content drafted successfully.",
+        recordId: historyRecord._id,
+        status: "completed",
+        generatedContent,
+        platform: "twitter",
+        title: defaultTitle
+      });
+    }
+
+    // 4. CASE C: Platform with potential n8n workflow (e.g. LinkedIn / Instagram)
+    const masterApp = await MasterApp.findOne({ iconKey: resolvedPlatform, isActive: true });
+    
+    // Check if user has an authorized integration
+    let userIntegration = null;
+    if (masterApp) {
+      userIntegration = await Integration.findOne({
+        userId,
+        appId: masterApp._id,
+        authStatus: 'authorized'
+      });
+    }
+
+    // If user asked to INSTANT_UPLOAD, but hasn't connected their account
+    if (intent === "INSTANT_UPLOAD" && !userIntegration) {
+      return res.status(401).json({
+        error: `Account not linked. Please connect your ${masterApp ? masterApp.name : resolvedPlatform} channel in the sidebar first to post directly.`
+      });
+    }
+
+    // If user is drafting content for LinkedIn and hasn't connected an account: generate directly with Gemini!
+    if (!userIntegration) {
+      console.log(`⚡ Generating ${resolvedPlatform} draft directly via Gemini (unconnected account)...`);
+      const generatedContent = await generateDirectContent({
+        promptText: prompt || defaultInputPrompt,
+        platform: resolvedPlatform
+      });
+
+      const fullContent = `${generatedContent}\n\n---\n💡 *Tip: Link your ${masterApp ? masterApp.name : "LinkedIn"} profile in the sidebar for 1-click publishing!*`;
+
+      const historyRecord = new PromptHistory({
+        userId,
+        title: defaultTitle,
+        inputPrompt: defaultInputPrompt,
+        generatedContent: fullContent,
+        status: "completed",
+        platform: resolvedPlatform,
+        attachments: attachments || []
+      });
+      await historyRecord.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Draft generated successfully.",
+        recordId: historyRecord._id,
+        status: "completed",
+        generatedContent: fullContent,
+        platform: resolvedPlatform,
+        title: defaultTitle
+      });
+    }
+
+    // Decrypt credentials for connected integrations
     console.log(`🔓 Decrypting connection credentials securely in-memory...`);
     let decryptedCredentials;
     try {
@@ -62,28 +169,14 @@ export const dispatchPrompt = async (req, res, next) => {
         userIntegration.authTag,
         true
       );
-
-      // Auto-refresh X/Twitter OAuth access token if expired or near expiry
-      if (targetPlatform.toLowerCase() === 'twitter') {
-        decryptedCredentials = await refreshTwitterTokenIfNeeded(userIntegration, decryptedCredentials);
-      }
     } catch (cryptoError) {
       console.error("🚨 Cryptographic Failure during decryption:", cryptoError);
       return res.status(500).json({ error: "Failed to securely verify platform keys." });
     }
 
-    // 3. Classify User Intent using LangChain
-    let intent = "POST_CREATION";
-    if (scheduling === "instant-upload") {
-      intent = "INSTANT_UPLOAD";
-    } else {
-      intent = await classifyUserIntent(prompt);
-    }
-    console.log(`🤖 LangChain classified user intent: ${intent}`);
-
     // Match target key and intent to its unique n8n pipeline environment URL
     let targetWebhookUrl = "";
-    if (targetPlatform.toLowerCase() === 'linkedin') {
+    if (resolvedPlatform === 'linkedin') {
       if (intent === 'INSTANT_UPLOAD') {
         targetWebhookUrl = process.env.N8N_LINKEDIN_INSTANT_UPLOAD_URL || process.env.N8N_LINKEDIN_WEBHOOK_URL;
       } else if (intent === 'ANALYTICS') {
@@ -93,21 +186,15 @@ export const dispatchPrompt = async (req, res, next) => {
       } else {
         targetWebhookUrl = process.env.N8N_LINKEDIN_WEBHOOK_URL;
       }
-    } else if (targetPlatform.toLowerCase() === 'twitter') {
-      targetWebhookUrl = process.env.N8N_TWITTER_WEBHOOK_URL;
-    } else if (targetPlatform.toLowerCase() === 'instagram') {
+    } else if (resolvedPlatform === 'instagram') {
       targetWebhookUrl = process.env.N8N_INSTAGRAM_WEBHOOK_URL;
     }
 
     if (!targetWebhookUrl) {
-      return res.status(500).json({ error: `Routing error: No workflow webhook configured for ${targetPlatform}.` });
+      return res.status(500).json({ error: `Routing error: No workflow webhook configured for ${resolvedPlatform}.` });
     }
 
     console.log(`💾 Initializing Async Tracking Record in MongoDB (Status: processing)...`);
-
-    // 💡 4. INITIALIZE THE HISTORY DOCUMENT WITH ATTACHMENTS
-    const defaultTitle = prompt || (attachments && attachments.length > 0 ? `Uploaded Image (${attachments[0].fileName})` : "Direct Media Dispatch");
-    const defaultInputPrompt = prompt || (attachments && attachments.length > 0 ? `Direct Media Dispatch: ${attachments[0].fileName}` : "Direct Upload");
 
     const historyRecord = new PromptHistory({
       userId,
@@ -115,15 +202,14 @@ export const dispatchPrompt = async (req, res, next) => {
       inputPrompt: defaultInputPrompt,
       generatedContent: "",
       status: "processing",
-      platform: targetPlatform.toLowerCase(),
-      attachments: attachments || [] // 👈 Commits file metadata strings directly into your database row
+      platform: resolvedPlatform,
+      attachments: attachments || []
     });
 
     await historyRecord.save();
 
     console.log(`🚀 Triggering n8n background execution flow pipeline (${intent}) asynchronously...`);
 
-    // 💡 5. FIRE ASYNC PAYLOAD DOWN THE PIPELINE WITH MEDIA ATTRIBUTES
     fetch(targetWebhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -133,7 +219,7 @@ export const dispatchPrompt = async (req, res, next) => {
         intent,
         strategy: scheduling || "instant",
         recordId: historyRecord._id, 
-        attachments: attachments || [], // 👈 n8n can now directly read fileUrl strings instantly!
+        attachments: attachments || [],
         credentials: decryptedCredentials 
       })
     }).catch(err => {
@@ -144,7 +230,8 @@ export const dispatchPrompt = async (req, res, next) => {
       success: true,
       message: "Content compilation pipeline spawned successfully.",
       recordId: historyRecord._id,
-      status: "processing"
+      status: "processing",
+      platform: resolvedPlatform
     });
 
   } catch (error) {
