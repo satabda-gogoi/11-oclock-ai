@@ -314,7 +314,7 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
               setShowSchedulePopover(!showSchedulePopover);
             }
           }}
-          disabled={isExecuting || isUploading}
+          disabled={isExecuting || isUploading || !activeApp}
           className={`flex items-center justify-center h-10 w-10 rounded-xl border transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer mb-0.5 ${
             isScheduled 
               ? "bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500/20" 
@@ -336,38 +336,40 @@ export default function PromptDock({ promptInput, setPromptInput, isExecuting, o
             placeholder={
               !isSubscribed
                 ? "Draft a high-performing post..."
+                : !activeApp 
+                ? "Select a platform channel from the sidebar first..." 
                 : isUploading 
                 ? "Streaming file assets securely down to bucket storage..." 
-                : activeApp 
-                ? `Draft a prompt command sequence for ${activeApp.name}...`
-                : "Type your idea, post request, or 'Post this to LinkedIn'..."
+                : `Draft a prompt command sequence for ${activeApp.name}...`
             }
             className="w-full bg-transparent border-0 outline-none p-1 text-sm text-foreground placeholder:text-muted-foreground disabled:cursor-not-allowed resize-none max-h-36 scrollbar-none"
           />
         </div>
 
-        <button
-          type="button"
-          onClick={handleInstantUploadClick}
-          disabled={
-            isExecuting || 
-            isUploading || 
-            (!promptInput.trim() && attachedFiles.length === 0) || 
-            (activeApp && activeApp.iconKey.toLowerCase() !== "linkedin")
-          }
-          className={`flex items-center justify-center h-10 w-10 rounded-xl border transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer mb-0.5 ${
-            !activeApp || activeApp.iconKey.toLowerCase() === "linkedin"
-              ? "bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500/20"
-              : "bg-background border-border hover:bg-accent/40 text-muted-foreground opacity-40 cursor-not-allowed"
-          }`}
-          title={
-            !activeApp || activeApp.iconKey.toLowerCase() === "linkedin"
-              ? "Instant Post to LinkedIn"
-              : "Instant Post is currently supported only for LinkedIn"
-          }
-        >
-          <Zap className="h-4 w-4" />
-        </button>
+        {activeApp && (
+          <button
+            type="button"
+            onClick={handleInstantUploadClick}
+            disabled={
+              isExecuting || 
+              isUploading || 
+              (!promptInput.trim() && attachedFiles.length === 0) || 
+              activeApp.iconKey.toLowerCase() !== "linkedin"
+            }
+            className={`flex items-center justify-center h-10 w-10 rounded-xl border transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer mb-0.5 ${
+              activeApp.iconKey.toLowerCase() === "linkedin"
+                ? "bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500/20"
+                : "bg-background border-border hover:bg-accent/40 text-muted-foreground opacity-40 cursor-not-allowed"
+            }`}
+            title={
+              activeApp.iconKey.toLowerCase() === "linkedin"
+                ? "Instant Post to LinkedIn"
+                : "Instant Post is currently supported only for LinkedIn"
+            }
+          >
+            <Zap className="h-4 w-4" />
+          </button>
+        )}
 
         <button
           type="submit"
