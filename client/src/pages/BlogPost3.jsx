@@ -397,10 +397,10 @@ export default function BlogPost3() {
               The Missing Piece in the AI Stack
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-foreground">
-              Chatbot vs. Dedicated Social Media Agent
+              Generic Chatbot vs. Unified Content Publishing Engine
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Wondering why top founders and content creators don't just use standard chatbots for social media? Here is how a dedicated agent like 11 o'clock transforms your distribution:
+              Wondering why top founders and content creators don't just use standard chatbots for social media? Here is how a unified publishing engine like 11 o'clock transforms your distribution:
             </p>
           </div>
 
@@ -427,7 +427,7 @@ export default function BlogPost3() {
 
             <div className="p-4 rounded-xl border border-primary/30 bg-primary/[0.04] space-y-3">
               <h4 className="font-bold text-primary flex items-center gap-2">
-                <Zap className="w-4 h-4 fill-primary text-primary" /> 11 o'clock (AI Social Media Agent)
+                <Zap className="w-4 h-4 fill-primary text-primary" /> 11 o'clock (Unified Publishing Engine)
               </h4>
               <ul className="space-y-2 text-foreground/90">
                 <li className="flex items-start gap-2">

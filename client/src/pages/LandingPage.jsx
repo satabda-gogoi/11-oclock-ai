@@ -215,8 +215,8 @@ export default function LandingPage() {
       a: "11 o'clock supports LinkedIn and Twitter(X). You can link your profiles and post to both platforms at the same time to gain followers and grow your audience."
     },
     {
-      q: "How does the AI social media engine cross-post and optimize content?",
-      a: "When you submit a simple prompt, our AI social media agent automatically adapts the post formatting, text length, and hashtags to match the community guidelines of LinkedIn and Twitter(X) so you get more likes, comments, and shares."
+      q: "How does the unified content publishing engine format and post content?",
+      a: "When you submit a simple prompt, our AI social media automation engine automatically adapts the post formatting, text length, and hashtags for LinkedIn and Twitter(X) so you get maximum engagement, likes, and shares."
     },
     {
       q: "Is my connection safe?",
@@ -471,11 +471,11 @@ export default function LandingPage() {
             </div>
 
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-foreground">
-              AI Social Media Automation for LinkedIn & Twitter(X)
+              Unified Content Publishing Engine for LinkedIn & Twitter (X)
             </h1>
 
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Stop manually writing posts. Meet the AI social media content creation tool that automatically writes, schedules, and posts your content to get more followers, likes, comments, and shares.
+              Stop manually writing and copy-pasting across tabs. Meet the unified AI social media automation engine that automatically writes, formats, schedules, and 1-click publishes your content.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center pt-4 w-full sm:w-auto">
@@ -654,9 +654,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
                 <Zap className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold">Instant AI Content Writer</h3>
+              <h3 className="text-lg font-bold">Instant AI Content Generation</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Type a simple idea or paste a rough outline. Our AI social media agent instantly generates high-performing, professionally formatted copy optimized for reading speed and maximum engagement.
+                Type a simple idea or paste a rough outline. Our unified content publishing engine instantly generates high-performing, professionally formatted copy optimized for LinkedIn and Twitter(X).
               </p>
             </div>
 
@@ -665,9 +665,9 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
                 <Layers className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold">One-Click Posting</h3>
+              <h3 className="text-lg font-bold">One-Click Multi-Channel Publishing</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Link LinkedIn and Twitter(X). Write once, and our AI social media tool automatically formats and schedules your posts to get more likes, comments, and shares.
+                Link LinkedIn and Twitter(X). Write once, and our AI social media automation engine automatically formats and schedules your posts to get more reach, likes, comments, and shares.
               </p>
             </div>
 
@@ -753,7 +753,7 @@ export default function LandingPage() {
         <section id="about" className="space-y-12 max-w-4xl mx-auto border-t border-custom/60 pt-16">
           <div className="text-center space-y-2">
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary font-bold">Our Story</p>
-            <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-foreground">About 11 o'clock: The Story Behind the AI Social Media Agent</h2>
+            <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-foreground">About 11 o'clock: The Unified Content Publishing Engine</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs sm:text-sm text-muted-foreground leading-relaxed">
@@ -763,16 +763,16 @@ export default function LandingPage() {
                 Our journey started with a simple frustration. Most social media automation tools are built like database spreadsheets. They are slow, cluttered, and require you to manually format, write, and adjust copy for every single channel. We realized creators, startup founders, and marketers were spending more time copying and pasting than actually creating.
               </p>
               <p>
-                We wanted to build an intelligent assistant. A platform where you just type an idea—like talking to a colleague—and an AI agent does the rest. We named it <strong>11 o'clock</strong> because it is that crucial hour of the day when you finalize your strategies, review your content, and prepare your brand to stand out.
+                We wanted to build a unified publishing engine. A platform where you just type an idea—like talking to a colleague—and the system formats and publishes it seamlessly. We named it <strong>11 o'clock</strong> because it is that crucial hour of the day when you finalize your strategies, review your content, and prepare your brand to stand out.
               </p>
             </div>
             <div className="space-y-4">
               <h3 className="font-bold text-foreground text-base">The Mission: Simple Social Media Automation</h3>
               <p>
-                As an <strong>ai social post writer</strong> and <strong>automated content calendar</strong>, 11 o'clock is built to eliminate the boring parts of content creation. We believe the <strong>best content creation software with ai</strong> should be invisible—allowing you to link your LinkedIn and Twitter(X) profiles safely, type your prompts, and publish instantly.
+                As a <strong>unified content publishing engine</strong> and <strong>automated content scheduler</strong>, 11 o'clock is built to eliminate the tedious friction in social publishing. We believe the <strong>best content creation and publishing software</strong> should be invisible—allowing you to link your LinkedIn and Twitter(X) profiles safely, type your prompts, and publish instantly.
               </p>
               <p>
-                Our core focus is to deliver a premium, fast, and secure <strong>cross-platform scheduler to schedule posts and grow your account</strong>. We never save your passwords, and we don't spam your feeds. We are here to help you automate your social media marketing, promote your profiles to get more likes, comments, and shares cleanly.
+                Our core focus is to deliver a premium, fast, and secure <strong>cross-platform scheduler to schedule posts and grow your account</strong>. We never save your passwords, and we don't spam your feeds. We are here to help you automate your social media marketing and distribute your posts cleanly.
               </p>
             </div>
           </div>
@@ -782,7 +782,7 @@ export default function LandingPage() {
         <section id="faq" className="space-y-12 max-w-3xl mx-auto">
           <div className="text-center space-y-2">
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary font-bold">Common Questions</p>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Frequently Asked Questions about our AI Social Media Agent</h2>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Frequently Asked Questions about our AI Social Media Automation</h2>
           </div>
 
           <div className="space-y-3">

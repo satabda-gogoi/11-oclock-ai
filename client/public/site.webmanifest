@@ -1,0 +1,23 @@
+{
+  "name": "11 o'clock - Unified Content Publishing Engine",
+  "short_name": "11 o'clock",
+  "description": "AI Social Media Automation for LinkedIn and Twitter / X",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

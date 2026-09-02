@@ -27,11 +27,11 @@ export default function BlogPage() {
     },
     {
       slug: "top-ai-social-media-agents",
-      title: "Top 5 AI Social Media Agents & Automation Tools in 2026",
-      description: "Traditional social media managers are slow and complex. Compare the best AI social media agents (Buffer, Hootsuite, Lately, Taplio, and 11 o'clock) to choose the right copilot for your workflow.",
+      title: "Top 5 AI Social Media Publishing & Automation Tools in 2026",
+      description: "Compare the best social media automation engines (Buffer, Hootsuite, Lately, Taplio, and 11 o'clock) to choose the right unified publishing tool for your workflow.",
       date: "August 30, 2026",
       readTime: "6 min read",
-      tags: ["AI Agent", "Social Media Automation", "Cross-Posting"],
+      tags: ["Publishing Engine", "Social Media Automation", "LinkedIn & Twitter/X"],
       category: "Guides"
     }
   ];
@@ -74,10 +74,10 @@ export default function BlogPage() {
             Our Blog & Insights
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-            AI Social Media Agent Insights & Automation Guides
+            Unified Content Publishing & Social Media Automation Guides
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Tutorials, reviews, comparative analyses, and design writeups focused on automating cross-platform content creation.
+            Tutorials, reviews, comparative analyses, and design writeups focused on automating multi-platform content creation.
           </p>
         </div>
 
