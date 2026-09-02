@@ -24,8 +24,8 @@ export default function Header({ onMenuClick }) {
 
           <div className={`h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 select-none pointer-events-none ${darkMode ? "bg-white" : "bg-black"}`}>
             <img 
-              src={darkMode ? "/logo_black.png" : "/logo_white.png"} 
-              alt="Eleven" 
+              src={darkMode ? "/11oclock-ai-logo-black.png" : "/11oclock-ai-logo-white.png"} 
+              alt="11 o'clock AI - Unified Content Publishing Engine" 
               className="h-5 w-5 object-contain select-none pointer-events-none"
               draggable="false"
             />
