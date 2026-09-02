@@ -11,6 +11,7 @@ import ContactPage from "./pages/ContactPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPost1 from "./pages/BlogPost1";
 import BlogPost2 from "./pages/BlogPost2";
+import BlogPost3 from "./pages/BlogPost3";
 
 export default function App() {
   return (
@@ -35,6 +36,11 @@ export default function App() {
       <Route 
         path="/blog/best-ai-social-media-tools-comparison" 
         element={<BlogPost2 />} 
+      />
+
+      <Route 
+        path="/blog/17-best-chatgpt-alternatives-2026" 
+        element={<BlogPost3 />} 
       />
 
       <Route 
